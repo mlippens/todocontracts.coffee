@@ -49,7 +49,7 @@ define ['jquery',
         @model.save title: value
       else
         @clear()
-        @$el.removeClass 'editing'
+      @$el.removeClass 'editing'
 
     updateOnEnter: (e)->
       if e.keyCode == Common.ENTER_KEY

@@ -19,4 +19,4 @@ define ['backbone','models/todo','backboneLocalStorage','contracts-js'],(Backbon
     comparator: C.guard(C.fun(C.Any, C.Num),(todo)->
         todo.get 'order')
 
-  Todos
+  new Todos()

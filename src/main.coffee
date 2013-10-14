@@ -16,6 +16,8 @@ require.config
     'backboneLocalStorage': '../bower_components/backbone.localStorage/backbone.localStorage',
     'text': '../bower_components/requirejs-text/text'
 
-require ['contracts-js','jquery','backbone','views/app'],(C,$,Backbone,AppView)->
+require ['contracts-js','jquery','backbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
+  new Workspace()
   Backbone.history.start()
   new AppView()
+

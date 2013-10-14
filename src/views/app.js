@@ -24,24 +24,23 @@
       };
 
       AppView.prototype.initialize = function() {
-        this.TodosCollection = new Todos();
         this.allCheckbox = this.$('#toggle-all')[0];
         this.$input = this.$('#new-todo');
         this.$footer = this.$('#footer');
         this.$main = this.$('#main');
-        this.listenTo(this.TodosCollection, 'add', this.addOne);
-        this.listenTo(this.TodosCollection, 'reset', this.addAll);
-        this.listenTo(this.TodosCollection, 'change:completed', this.filterOne);
-        this.listenTo(this.TodosCollection, 'filter', this.filterAll);
-        this.listenTo(this.TodosCollection, 'all', this.render);
-        return this.TodosCollection.fetch();
+        this.listenTo(Todos, 'add', this.addOne);
+        this.listenTo(Todos, 'reset', this.addAll);
+        this.listenTo(Todos, 'change:completed', this.filterOne);
+        this.listenTo(Todos, 'filter', this.filterAll);
+        this.listenTo(Todos, 'all', this.render);
+        return Todos.fetch();
       };
 
       AppView.prototype.render = C.guard(C.fun(C.Any, C.Self), function() {
         var completed, remaining;
-        completed = this.TodosCollection.completed().length;
-        remaining = this.TodosCollection.remaining().length;
-        if (this.TodosCollection.length) {
+        completed = Todos.completed().length;
+        remaining = Todos.remaining().length;
+        if (Todos.length) {
           this.$main.show();
           this.$footer.show();
           this.$footer.html(this.template({
@@ -67,7 +66,7 @@
 
       AppView.prototype.addAll = function() {
         this.$('#todo-list').html('');
-        return this.TodosCollection.each(this.addOne, this);
+        return Todos.each(this.addOne, this);
       };
 
       AppView.prototype.filterOne = function(todo) {
@@ -75,7 +74,7 @@
       };
 
       AppView.prototype.filterAll = function() {
-        return this.TodosCollection.each(this.filterOne, this);
+        return Todos.each(this.filterOne, this);
       };
 
       AppView.prototype.newAttributes = C.guard(C.fun(C.Any, C.object({
@@ -85,7 +84,7 @@
       })), function() {
         return {
           title: this.$input.val().trim(),
-          order: this.TodosCollection.nextOrder(),
+          order: Todos.nextOrder(),
           completed: false
         };
       });
@@ -96,20 +95,20 @@
 
       AppView.prototype.createOnEnter = C.guard(C.fun(AppView.prototype.isEvent, C.Any), function(e) {
         if (!(e.which !== Common.ENTER_KEY || !this.$input.val().trim())) {
-          this.TodosCollection.create(this.newAttributes());
+          Todos.create(this.newAttributes());
           return this.$input.val('');
         }
       });
 
       AppView.prototype.clearCompleted = function() {
-        _.invoke(this.TodosCollection.completed(), 'destroy');
+        _.invoke(Todos.completed(), 'destroy');
         return false;
       };
 
       AppView.prototype.toggleAllComplete = function() {
         var completed;
         completed = this.allCheckbox.checked;
-        return this.TodosCollection.each(function(todo) {
+        return Todos.each(function(todo) {
           return todo.save({
             'completed': completed
           });

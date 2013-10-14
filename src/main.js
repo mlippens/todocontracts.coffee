@@ -24,7 +24,8 @@
     }
   });
 
-  require(['contracts-js', 'jquery', 'backbone', 'views/app'], function(C, $, Backbone, AppView) {
+  require(['contracts-js', 'jquery', 'backbone', 'views/app', 'router/workspace'], function(C, $, Backbone, AppView, Workspace) {
+    new Workspace();
     Backbone.history.start();
     return new AppView();
   });

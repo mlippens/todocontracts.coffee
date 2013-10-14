@@ -17,25 +17,24 @@ define ['jquery',
       'click #toggle-all': 'toggleAllComplete'
 
     initialize: ()->
-      @TodosCollection = new Todos()
       @allCheckbox = @.$('#toggle-all')[0]
       @$input = @.$('#new-todo')
       @$footer = @.$('#footer')
       @$main = @.$('#main')
 
-      @listenTo @TodosCollection, 'add', @addOne
-      @listenTo @TodosCollection, 'reset', @addAll
-      @listenTo @TodosCollection, 'change:completed', @filterOne
-      @listenTo @TodosCollection, 'filter', @filterAll
-      @listenTo @TodosCollection, 'all', @render
+      @listenTo Todos, 'add', @addOne
+      @listenTo Todos, 'reset', @addAll
+      @listenTo Todos, 'change:completed', @filterOne
+      @listenTo Todos, 'filter', @filterAll
+      @listenTo Todos, 'all', @render
 
-      @TodosCollection.fetch()
+      Todos.fetch()
 
     render: C.guard(C.fun(C.Any,C.Self), ()->
-        completed = @TodosCollection.completed().length
-        remaining = @TodosCollection.remaining().length
+        completed = Todos.completed().length
+        remaining = Todos.remaining().length
 
-        if @TodosCollection.length
+        if Todos.length
           @$main.show()
           @$footer.show()
 
@@ -55,17 +54,17 @@ define ['jquery',
 
     addAll: ()->
       @.$('#todo-list').html('')
-      @TodosCollection.each(@addOne, @)
+      Todos.each(@addOne, @)
 
     filterOne: (todo)->
       todo.trigger 'visible'
 
     filterAll: ()->
-      @TodosCollection.each(@filterOne, @)
+      Todos.each(@filterOne, @)
 
     newAttributes: C.guard(C.fun(C.Any,C.object({title: C.Str,order: C.Num, completed: C.Bool})),()->
       title: @$input.val().trim()
-      order: @TodosCollection.nextOrder()
+      order: Todos.nextOrder()
       completed: false)
 
     #Simplified test for an Event contract
@@ -74,15 +73,15 @@ define ['jquery',
 
     createOnEnter: C.guard(C.fun(@.prototype.isEvent,C.Any),(e)->
       if !(e.which != Common.ENTER_KEY || !@$input.val().trim())
-        @TodosCollection.create @newAttributes()
+        Todos.create @newAttributes()
         @$input.val '')
 
     clearCompleted: ()->
-      _.invoke @TodosCollection.completed(), 'destroy'
+      _.invoke Todos.completed(), 'destroy'
       false
 
     toggleAllComplete: ()->
       completed = @allCheckbox.checked
-      @TodosCollection.each (todo)->
+      Todos.each (todo)->
         todo.save 'completed': completed
 

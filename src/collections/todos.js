@@ -42,7 +42,7 @@
       return Todos;
 
     })(Backbone.Collection);
-    return Todos;
+    return new Todos();
   });
 
 }).call(this);

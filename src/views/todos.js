@@ -62,13 +62,13 @@
         var value;
         value = this.$input.val().trim();
         if (value) {
-          return this.model.save({
+          this.model.save({
             title: value
           });
         } else {
           this.clear();
-          return this.$el.removeClass('editing');
         }
+        return this.$el.removeClass('editing');
       };
 
       TodoView.prototype.updateOnEnter = function(e) {
