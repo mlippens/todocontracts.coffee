@@ -28,6 +28,7 @@ define ['jquery',
       @listenTo Todos, 'filter', @filterAll
       @listenTo Todos, 'all', @render
 
+      #triggers reset(?)
       Todos.fetch()
 
     render: C.guard(C.fun(C.Any,C.Self), ()->
@@ -41,7 +42,8 @@ define ['jquery',
           @$footer.html(@template completed: completed, remaining: remaining)
           @.$('#filters li a')
           .removeClass('selected')
-          .filter('[href="#' + (Common.TodoFilter || '') + '"]')
+          .filter('[href="#/' + (Common.TodoFilter || '') + '"]')
+          .addClass('selected')
         else
           @$main.hide()
           @$footer.hide()

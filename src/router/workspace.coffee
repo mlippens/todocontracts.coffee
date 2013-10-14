@@ -6,4 +6,5 @@ define ['common','collections/todos','backbone'],(Common,Todos,Backbone)->
     setFilter: (param)->
       Common.TodoFilter = param.trim() || ''
       Todos.trigger 'filter'
+
   Workspace

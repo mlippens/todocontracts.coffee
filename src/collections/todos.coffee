@@ -8,7 +8,7 @@ define ['backbone','models/todo','backboneLocalStorage','contracts-js'],(Backbon
           todo.get 'completed')
 
     remaining: C.guard(C.fun(C.Any,C.Arr),()->
-        @without.apply(@,@completed))
+        @without.apply(@,@completed()))
 
     nextOrder: C.guard(C.fun(C.Any,C.Num),()->
         if !@length

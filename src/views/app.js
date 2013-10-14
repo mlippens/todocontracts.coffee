@@ -47,7 +47,7 @@
             completed: completed,
             remaining: remaining
           }));
-          this.$('#filters li a').removeClass('selected').filter('[href="#' + (Common.TodoFilter || '') + '"]');
+          this.$('#filters li a').removeClass('selected').filter('[href="#/' + (Common.TodoFilter || '') + '"]').addClass('selected');
         } else {
           this.$main.hide();
           this.$footer.hide();

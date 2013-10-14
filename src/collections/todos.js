@@ -24,7 +24,7 @@
       });
 
       Todos.prototype.remaining = C.guard(C.fun(C.Any, C.Arr), function() {
-        return this.without.apply(this, this.completed);
+        return this.without.apply(this, this.completed());
       });
 
       Todos.prototype.nextOrder = C.guard(C.fun(C.Any, C.Num), function() {
