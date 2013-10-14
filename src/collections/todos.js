@@ -3,7 +3,7 @@
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  define(['backbone', 'models/todo', 'backboneLocalStorage'], function(Backbone, TodoModel, Store) {
+  define(['backbone', 'models/todo', 'backboneLocalStorage', 'contracts-js'], function(Backbone, TodoModel, Store, C) {
     var Todos, _ref;
     Todos = (function(_super) {
       __extends(Todos, _super);
@@ -17,27 +17,27 @@
 
       Todos.prototype.localStorage = new Store('todos-storage');
 
-      Todos.prototype.completed = function() {
+      Todos.prototype.completed = C.guard(C.fun(C.Any, C.Arr), function() {
         return this.filter(function(todo) {
           return todo.get('completed');
         });
-      };
+      });
 
-      Todos.prototype.remaining = function() {
+      Todos.prototype.remaining = C.guard(C.fun(C.Any, C.Arr), function() {
         return this.without.apply(this, this.completed);
-      };
+      });
 
-      Todos.prototype.nextOrder = function() {
+      Todos.prototype.nextOrder = C.guard(C.fun(C.Any, C.Num), function() {
         if (!this.length) {
           return 1;
         } else {
           return this.last().get('order') + 1;
         }
-      };
+      });
 
-      Todos.prototype.comparator = function(todo) {
+      Todos.prototype.comparator = C.guard(C.fun(C.Any, C.Num), function(todo) {
         return todo.get('order');
-      };
+      });
 
       return Todos;
 
@@ -46,3 +46,7 @@
   });
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=todos.map
+*/

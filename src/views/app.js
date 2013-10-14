@@ -37,7 +37,7 @@
         return this.TodosCollection.fetch();
       };
 
-      AppView.prototype.render = function() {
+      AppView.prototype.render = C.guard(C.fun(C.Any, C.Self), function() {
         var completed, remaining;
         completed = this.TodosCollection.completed().length;
         remaining = this.TodosCollection.remaining().length;
@@ -55,7 +55,7 @@
         }
         this.allCheckbox.checked = !remaining;
         return this;
-      };
+      });
 
       AppView.prototype.addOne = function(todo) {
         var view;
@@ -78,20 +78,28 @@
         return this.TodosCollection.each(this.filterOne, this);
       };
 
-      AppView.prototype.newAttributes = function() {
+      AppView.prototype.newAttributes = C.guard(C.fun(C.Any, C.object({
+        title: C.Str,
+        order: C.Num,
+        completed: C.Bool
+      })), function() {
         return {
           title: this.$input.val().trim(),
           order: this.TodosCollection.nextOrder(),
           completed: false
         };
-      };
+      });
 
-      AppView.prototype.createOnEnter = function(e) {
+      AppView.prototype.isEvent = C.check((function(e) {
+        return e.which !== 'undefined';
+      }), 'Event');
+
+      AppView.prototype.createOnEnter = C.guard(C.fun(AppView.prototype.isEvent, C.Any), function(e) {
         if (!(e.which !== Common.ENTER_KEY || !this.$input.val().trim())) {
           this.TodosCollection.create(this.newAttributes());
           return this.$input.val('');
         }
-      };
+      });
 
       AppView.prototype.clearCompleted = function() {
         _.invoke(this.TodosCollection.completed(), 'destroy');
@@ -114,3 +122,7 @@
   });
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=app.map
+*/

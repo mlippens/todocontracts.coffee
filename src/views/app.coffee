@@ -31,23 +31,23 @@ define ['jquery',
 
       @TodosCollection.fetch()
 
-    render: ()->
-      completed = @TodosCollection.completed().length
-      remaining = @TodosCollection.remaining().length
+    render: C.guard(C.fun(C.Any,C.Self), ()->
+        completed = @TodosCollection.completed().length
+        remaining = @TodosCollection.remaining().length
 
-      if @TodosCollection.length
-        @$main.show()
-        @$footer.show()
+        if @TodosCollection.length
+          @$main.show()
+          @$footer.show()
 
-        @$footer.html(@template completed: completed, remaining: remaining)
-        @.$('#filters li a')
-        .removeClass('selected')
-        .filter('[href="#'+(Common.TodoFilter || '')+'"]')
-      else
-        @$main.hide()
-        @$footer.hide()
-      @allCheckbox.checked = !remaining
-      @
+          @$footer.html(@template completed: completed, remaining: remaining)
+          @.$('#filters li a')
+          .removeClass('selected')
+          .filter('[href="#' + (Common.TodoFilter || '') + '"]')
+        else
+          @$main.hide()
+          @$footer.hide()
+        @allCheckbox.checked = !remaining
+        @)
 
     addOne: (todo)->
       view = new TodoView model: todo
@@ -63,15 +63,19 @@ define ['jquery',
     filterAll: ()->
       @TodosCollection.each(@filterOne, @)
 
-    newAttributes: ()->
+    newAttributes: C.guard(C.fun(C.Any,C.object({title: C.Str,order: C.Num, completed: C.Bool})),()->
       title: @$input.val().trim()
       order: @TodosCollection.nextOrder()
-      completed: false
+      completed: false)
 
-    createOnEnter: (e)->
+    #Simplified test for an Event contract
+    isEvent: C.check(((e)->
+      e.which isnt 'undefined'),'Event')
+
+    createOnEnter: C.guard(C.fun(@.prototype.isEvent,C.Any),(e)->
       if !(e.which != Common.ENTER_KEY || !@$input.val().trim())
         @TodosCollection.create @newAttributes()
-        @$input.val ''
+        @$input.val '')
 
     clearCompleted: ()->
       _.invoke @TodosCollection.completed(), 'destroy'

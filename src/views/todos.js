@@ -43,11 +43,11 @@
         return this.$el.toggleClass('hidden', this.isHidden());
       };
 
-      TodoView.prototype.isHidden = function() {
+      TodoView.prototype.isHidden = C.guard(C.fun(C.Any, C.Bool), function() {
         var isCompleted;
         isCompleted = this.model.get('completed');
         return (!isCompleted && Common.TodoFilter === 'completed') || (isCompleted && Common.TodoFilter === 'active');
-      };
+      });
 
       TodoView.prototype.toggleCompleted = function() {
         return this.model.toggle();
@@ -87,3 +87,7 @@
   });
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=todos.map
+*/

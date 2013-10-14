@@ -1,22 +1,22 @@
-define ['backbone','models/todo','backboneLocalStorage'],(Backbone,TodoModel,Store)->
+define ['backbone','models/todo','backboneLocalStorage','contracts-js'],(Backbone,TodoModel,Store,C)->
   class Todos extends Backbone.Collection
     model: TodoModel
     localStorage: new Store('todos-storage')
 
-    completed: ()->
-      @filter (todo)->
-        todo.get 'completed'
+    completed: C.guard(C.fun(C.Any, C.Arr),()->
+        @filter (todo)->
+          todo.get 'completed')
 
-    remaining: ()->
-      @without.apply(@,@completed)
+    remaining: C.guard(C.fun(C.Any,C.Arr),()->
+        @without.apply(@,@completed))
 
-    nextOrder: ()->
-      if !@length
-        1
-      else
-        @last().get('order') + 1
+    nextOrder: C.guard(C.fun(C.Any,C.Num),()->
+        if !@length
+          1
+        else
+          @last().get('order') + 1)
 
-    comparator: (todo)->
-      todo.get 'order'
+    comparator: C.guard(C.fun(C.Any, C.Num),(todo)->
+        todo.get 'order')
 
   Todos

@@ -9,7 +9,6 @@ define ['jquery',
 
     template: _.template(todosTemplate)
 
-
     events:
       'click .toggle': 'toggleCompleted',
       'dblclick label': 'edit',
@@ -32,10 +31,10 @@ define ['jquery',
     toggleVisible: ()->
       @$el.toggleClass('hidden', @isHidden());
 
-    isHidden: ()->
+    isHidden: C.guard(C.fun(C.Any,C.Bool), ()->
       isCompleted = @model.get 'completed'
       (!isCompleted && Common.TodoFilter == 'completed') ||
-      (isCompleted && Common.TodoFilter == 'active')
+      (isCompleted && Common.TodoFilter == 'active'))
 
     toggleCompleted: ()->
       @model.toggle()
