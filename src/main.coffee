@@ -19,5 +19,4 @@ require.config
 require ['contracts-js','jquery','backbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
   new Workspace()
   Backbone.history.start()
-  new AppView()
 

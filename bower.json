@@ -1,5 +1,5 @@
 {
-    "name": "example project",
+    "name": "todocontracts.coffee",
     "version": "0.0.0",
     "dependencies": {
         "backbone": "~0.9.10",
@@ -7,6 +7,7 @@
         "jquery": "~1.9.1",
         "backbone.localStorage": "~1.1.0",
         "todomvc-common": "~0.1.4",
+        "backbone-relational": "latest",
         "requirejs": "~2.1.5",
         "requirejs-text": "~2.0.5"
     }

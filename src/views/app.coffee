@@ -2,11 +2,14 @@ define ['jquery',
         'underscore',
         'backbone',
         'collections/todos',
-        'views/todos',
+        'views/tododetail',
         'text!templates/stats.html',
+        'text!templates/todo-overview.html',
         'common'
-        'contracts-js'], ($, _, Backbone, Todos, TodoView, statsTemplate, Common, C)->
+        'contracts-js'], ($, _, Backbone, Todos, TodoView, statsTemplate,overviewTemplate, Common, C)->
   class AppView extends Backbone.View
+
+    #context of this view
     el: '#todoapp',
 
     template: _.template(statsTemplate),
@@ -17,18 +20,24 @@ define ['jquery',
       'click #toggle-all': 'toggleAllComplete'
 
     initialize: ()->
+      @$el.html(_.template(overviewTemplate,{}))
       @allCheckbox = @.$('#toggle-all')[0]
+      #mimic backbone style
       @$input = @.$('#new-todo')
       @$footer = @.$('#footer')
       @$main = @.$('#main')
-
+      #on added
       @listenTo Todos, 'add', @addOne
+      #on fetch (see stacktrace)
       @listenTo Todos, 'reset', @addAll
+      #on a change of the completed field
       @listenTo Todos, 'change:completed', @filterOne
+      #on a filter event (filter is triggered in the router)
       @listenTo Todos, 'filter', @filterAll
+      #render is triggered on all events
       @listenTo Todos, 'all', @render
 
-      #triggers reset(?)
+      #triggers reset
       Todos.fetch()
 
     render: C.guard(C.fun(C.Any,C.Self), ()->

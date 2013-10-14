@@ -1,10 +1,20 @@
-define ['common','collections/todos','backbone'],(Common,Todos,Backbone)->
+define ['common','collections/todos','views/app','views/category','backbone'],(Common,Todos,AppView,CategoryView,Backbone)->
   class Workspace extends Backbone.Router
     routes:
-      '*filter': 'setFilter'
+      ''            : 'home'
+      'categories'  : 'categoryOverview'
+      '*filter'     : 'setFilter'
+
+    home: ()->
+      new AppView()
 
     setFilter: (param)->
-      Common.TodoFilter = param.trim() || ''
-      Todos.trigger 'filter'
+        Common.TodoFilter = param.trim() || ''
+        Todos.trigger 'filter'
+
+    categoryOverview: ()->
+      new CategoryView()
+
+
 
   Workspace
