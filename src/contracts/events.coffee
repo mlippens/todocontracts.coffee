@@ -6,7 +6,7 @@ C = window['contracts-js']
 Obj= C.check(((e)->
   e != null && typeof e == 'object'),"Object")
 Model= C.check((e)->
-  e == null || e = null && e == 'object' && e.__proto__ == Backbone.Model.prototype)
+  e == null || e == 'object' && e.__proto__ == Backbone.Model.prototype)
 
 events = {}
 
