@@ -1,0 +1,11 @@
+{
+    "name": "todo.contracts",
+    "version": "0.0.2",
+    "description": "some contracted js app",
+    "dependencies":
+        {
+            "contracts-js": "latest",
+            "contracts.coffee": "latest"
+        },
+    "author": "Michael Lippens"
+}

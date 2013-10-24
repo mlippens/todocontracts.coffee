@@ -40,7 +40,7 @@ define ['jquery',
       #triggers reset
       Todos.fetch()
 
-    render: C.guard(C.fun(C.Any,C.Self), ()->
+    render: ()->
         completed = Todos.completed().length
         remaining = Todos.remaining().length
 
@@ -57,7 +57,7 @@ define ['jquery',
           @$main.hide()
           @$footer.hide()
         @allCheckbox.checked = !remaining
-        @)
+        @
 
     addOne: (todo)->
       view = new TodoView model: todo
