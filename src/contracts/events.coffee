@@ -1,5 +1,5 @@
 #needs to be compiled with contracts.coffee to generate contract code!
-#load contracts
+#load contracts (todo: abstract window with coffee)
 C = window['contracts-js']
 
 #custom checks
