@@ -1,13 +1,41 @@
+root = exports ? this
+C = root['contracts-js']
+
+class ContractedLibrary
+
+  moduleName = ""
+  exportedObjects = []
+
+  constructor: (name)->
+    moduleName = new ModuleName(name,"",false)
+
+  add: (obj)->
+    exportedObjects.push obj
+
+  export: ()->
+    for obj in exportedObjects
+      obj.export(moduleName)
+
+
 Class = class Interface
 
   contracts = if Map then new Map else {}
   keys = []
   contractedObject = null
 
-  constructor: (root,contractedObj)->
+  guard = ()->
+    if contractedObject isnt null
+      for key in keys
+        do (k = key)->
+          contract = contracts.get k
+          if contract?
+            guarded = C.guard(contract,contractedObject[k])
+            contractedObject[k] = guarded
+
+  constructor: (lib,contractedObj)->
     contractedObject = contractedObj
-    ###if typeof root isnt 'undefined'
-      root.add(@)###
+    lib.add(@)
+
 
   extend: (extended,obj)->
     #put the contracts in your own map
@@ -30,27 +58,29 @@ Class = class Interface
   contracts: (object)->
     @extend(null,object)
 
+  isInterface: ()->
+    return (contractedObject is null)
+
   __keys: ()->
     keys
 
   __get: (key)->
     contracts.get key
 
-  guard: ()->
-    if contractedObject isnt null
-      for key in keys
-        do (k = key)->
-          contract = contracts.get k
-          if contract?
-            guarded = C.guard(contract,contractedObject[k])
-            contractedObject[k] = guarded
+  export: (moduleName)->
+    if not @isInterface()
+      guard()
+      C.setExported(contractedObject,moduleName)
+    return true
 
-g = new Class()
+
+r = new ContractedLibrary("Backbone")
+g = new Class(r)
 
 g.contracts
   ali_g: "hello guys!"
 
-f = new Class()
+f = new Class(r)
 f.extend g,
   foo: "hi"
   boo: "ho"

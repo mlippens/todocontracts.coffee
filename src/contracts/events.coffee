@@ -19,6 +19,7 @@ View        = makeObjChecker('__proto__',Backbone.View.prototype,"View")
 Collection  = makeObjChecker('__proto__',Backbone.Collection.prototype,"Collection")
 
 
+
 events = {}
 
 events['on']          = ?(Any, (Any) -> Any) -> Any
