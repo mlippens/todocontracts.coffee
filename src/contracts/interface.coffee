@@ -1,7 +1,8 @@
 root = exports ? this
 C = root['contracts-js']
 
-contractedRoot = root['contracted']
+library_path = 'libraries'
+exports = root.contracted
 
 class ContractedLibrary
 
@@ -11,9 +12,13 @@ class ContractedLibrary
   constructor: (name)->
     module = name
 
-
   add: (obj)->
     exportedObjects.push obj
+
+  each: (fun)->
+    for obj in exportedObjects
+      if not obj.isInterface()
+        fun.call(@,obj)
 
   export: ()->
     moduleName = new ModuleName(module,"",false)
@@ -22,10 +27,10 @@ class ContractedLibrary
     #we store this object somewhere so we can access it in a module that exports it.
     #the moduleName here should be the same as the one we registered with require.js!
     #in the wrapper we can then check whether the library is known in our own contract system.
-    contractedRoot[module] = @
+    exports[library_path][module] = @
 
 
-Class = class Interface
+Interface = class Class
 
   contracts = if Map then new Map else {}
   keys = []
@@ -82,6 +87,75 @@ Class = class Interface
     return true
 
 
+define: (name, deps, callback)->
+  if typeof define is 'function' and define.amd
+      if typeof name isnt 'string'
+        cb = deps
+      else
+        cb = callback
+
+      #big difference here: we dont call the callback with
+      #the object, but rather with the original arguments array sliced.
+      wrapped_callback = ()->
+        i = 0
+        while i < arguments.length
+          lib = deps[i]
+          if exports[library_path][lib]
+            contracted_module = exports[library_path][lib]
+            contracted_module.each (e)->
+              C.use e,name
+          else
+            C.use arguments[i], name
+          i++
+        slice = {}.slice
+        ret = cb.call(@,slice.call(arguments,0))
+        C.setExported ret,name
+
+      if(not Array.isArray(deps))
+        deps = wrapped_callback
+      define(name,deps,wrapped_callback)
+
+
+ ###
+  module shim originating from nodes.coffee in contracts.coffee
+    if (typeof(define) === 'function' && define.amd) {
+      // we're using requirejs
+
+      // Allow for anonymous functions
+      __define = function(name, deps, callback) {
+        var cb, wrapped_callback;
+
+      if(typeof(name) !== 'string') {
+      cb = deps;
+      } else {
+    cb = callback;
+      }
+
+
+      wrapped_callback = function() {
+      var i, ret, used_arguments = [];
+      for (i = 0; i < arguments.length; i++) {
+    used_arguments[i] = __contracts.use(arguments[i], "#{o.filename}");
+      }
+      ret = cb.apply(this, used_arguments);
+      return __contracts.setExported(ret, "#{o.filename}");
+      };
+
+      if(!Array.isArray(deps)) {
+      deps = wrapped_callback;
+      }
+      define(name, deps, wrapped_callback);
+      };
+    }###
+
+exports.Class = Class
+exports.Interface = Interface
+exports.ContractedLibrary = ContractedLibrary
+
+return exports
+
+
+###
 r = new ContractedLibrary("Backbone")
 g = new Class(r)
 
@@ -94,6 +168,4 @@ f.extend g,
   boo: "ho"
   bee: "he"
 
-
-
-alert f.__keys()
+alert f.__keys()###
