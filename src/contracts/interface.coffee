@@ -1,20 +1,28 @@
 root = exports ? this
 C = root['contracts-js']
 
+contractedRoot = root['contracted']
+
 class ContractedLibrary
 
-  moduleName = ""
+  module = ""
   exportedObjects = []
 
   constructor: (name)->
-    moduleName = new ModuleName(name,"",false)
+    module = name
+
 
   add: (obj)->
     exportedObjects.push obj
 
   export: ()->
+    moduleName = new ModuleName(module,"",false)
     for obj in exportedObjects
       obj.export(moduleName)
+    #we store this object somewhere so we can access it in a module that exports it.
+    #the moduleName here should be the same as the one we registered with require.js!
+    #in the wrapper we can then check whether the library is known in our own contract system.
+    contractedRoot[module] = @
 
 
 Class = class Interface
