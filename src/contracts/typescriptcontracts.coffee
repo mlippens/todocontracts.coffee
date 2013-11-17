@@ -22,9 +22,10 @@ class ContractedLibrary
         fun.call(@,obj)
 
   export: ()->
-    moduleName = new ModuleName(module,"",false)
+    #! moduleName from contracts.js is NOT public
+    #moduleName = new C.ModuleName(module,"",false)
     for obj in exportedObjects
-      obj.export(moduleName)
+      obj.export(module)
     #we store this object somewhere so we can access it in a module that exports it.
     #the moduleName here should be the same as the one we registered with require.js!
     #in the wrapper we can then check whether the library is known in our own contract system.
@@ -53,18 +54,19 @@ Interface = class Class
 
   extend: (extended,obj)->
     #put the contracts in your own map
-    for own contract of obj
-      mapval = contracts.get contract
-      if not mapval?
-        contracts.set contract, obj[contract]
-        keys.push contract
+    if typeof obj is 'object'
+      for own contract of obj
+        mapval = contracts.get contract
+        if not mapval?
+          contracts.set contract, obj[contract]
+          keys.push contract
     #put the extended object's keys in your map
     if extended isnt null and typeof extended is 'object' and extended.__keys?
       keys = extended.__keys()
       for key in keys
         value = contracts.get key
         if not value?
-          contracts.set key,value
+          contracts.set key,extended.__get(key)
 
   implements: (a,b)->
     @extend(a,b)
