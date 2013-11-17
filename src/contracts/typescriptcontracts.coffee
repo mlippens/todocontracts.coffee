@@ -1,8 +1,9 @@
 root = exports ? this
 C = root['contracts-js']
 
+#global vars to mainstream things.
 library_path = 'libraries'
-exports = root.contracted
+exports = root.contracted = {}
 
 class ContractedLibrary
 
@@ -87,7 +88,7 @@ Interface = class Class
     return true
 
 
-define: (name, deps, callback)->
+define = (name, deps, callback)->
   if typeof define is 'function' and define.amd
       if typeof name isnt 'string'
         cb = deps
@@ -151,6 +152,7 @@ define: (name, deps, callback)->
 exports.Class = Class
 exports.Interface = Interface
 exports.ContractedLibrary = ContractedLibrary
+exports.define = define
 
 return exports
 
