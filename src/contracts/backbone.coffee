@@ -35,7 +35,7 @@ events['listenTo']    = ?(Obj,Str,(Any) -> Any) -> Any
 events_interface = new Contracted.Interface(backbone)
 events_interface.contracts(events)
 
-view_class = new Contracted.Class(backbone,Backbone.View.prototype)
+view_class = new Contracted.Class(backbone,Backbone,['View','prototype'])
 view_class.implements(events_interface)
 
 #set the library as exported means: guard everything with the correct label

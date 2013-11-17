@@ -29,14 +29,15 @@ class ContractedLibrary
     #we store this object somewhere so we can access it in a module that exports it.
     #the moduleName here should be the same as the one we registered with require.js!
     #in the wrapper we can then check whether the library is known in our own contract system.
-    exports[library_path][module] = @
-
+    libs = exports[library_path] = {} if typeof exports[library_path] is 'undefined'
+    libs[module] = @
 
 Interface = class Class
 
   contracts = if Map then new Map else {}
   keys = []
   contractedObject = null
+  path = []
 
   guard = ()->
     if contractedObject isnt null
@@ -47,8 +48,10 @@ Interface = class Class
             guarded = C.guard(contract,contractedObject[k])
             contractedObject[k] = guarded
 
-  constructor: (lib,contractedObj)->
-    contractedObject = contractedObj
+  # constructor :: ([ContractedLibrary,Object,Array])
+  constructor: (lib,root,pathToObj)->
+    contractedObject = makeObjStructure(pathToObj,root)
+    path = pathToObj
     lib.add(@)
 
 
@@ -83,13 +86,25 @@ Interface = class Class
   __get: (key)->
     contracts.get key
 
+  __path: ()->
+    path
+
   export: (moduleName)->
     if not @isInterface()
       guard()
       C.setExported(contractedObject,moduleName)
     return true
 
+makeObjStructure = (pathArray,obj,replacement)->
+  for i,part in pathArray
+    if not obj[part]?
+      obj[part] = {}
+    if replacement isnt null and i+1 is pathArray.length-1
+      obj[part] = replacement
+    obj = obj[part]
+  return obj
 
+#Todo: test this function.
 define = (name, deps, callback)->
   if typeof define is 'function' and define.amd
       if typeof name isnt 'string'
@@ -97,21 +112,24 @@ define = (name, deps, callback)->
       else
         cb = callback
 
-      #big difference here: we dont call the callback with
-      #the object, but rather with the original arguments array sliced.
       wrapped_callback = ()->
         i = 0
+        used_arguments = []
         while i < arguments.length
           lib = deps[i]
           if exports[library_path][lib]
+            exported_module = {}
             contracted_module = exports[library_path][lib]
             contracted_module.each (e)->
-              C.use e,name
+              #Todo: we need to mimic the structure of the original object here somehow
+              makeObjStructure(e.__path(),exported_module,C.use(e,name))
+            used_arguments[i] = exported_module
           else
-            C.use arguments[i], name
+            used_arguments[i] = C.use arguments[i], name
           i++
         slice = {}.slice
         ret = cb.call(@,slice.call(arguments,0))
+        #only supports first-level objects, which is just what we're trying to solve.
         C.setExported ret,name
 
       if(not Array.isArray(deps))

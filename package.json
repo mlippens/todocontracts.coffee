@@ -4,7 +4,7 @@
     "description": "some contracted js app",
     "dependencies":
         {
-            "contracts-js": "latest",
+            "contracts-js": "git://github.com/froginvasion/contracts.js",
             "contracts.coffee": "latest"
         },
     "author": "Michael Lippens"
