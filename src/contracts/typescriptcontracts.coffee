@@ -50,8 +50,9 @@ Interface = class Class
 
   # constructor :: ([ContractedLibrary,Object,Array])
   constructor: (lib,root,pathToObj)->
-    contractedObject = makeObjStructure(pathToObj,root)
-    path = pathToObj
+    if typeof root isnt 'undefined' and typeof pathToObj isnt 'undefined'
+      contractedObject = makeObjStructure(pathToObj,root,null)
+      path = pathToObj
     lib.add(@)
 
 
@@ -96,11 +97,12 @@ Interface = class Class
     return true
 
 makeObjStructure = (pathArray,obj,replacement)->
-  for i,part in pathArray
+  for part,i in pathArray
     if not obj[part]?
       obj[part] = {}
     if replacement isnt null and i+1 is pathArray.length-1
-      obj[part] = replacement
+      obj = obj[part]
+      obj[pathArray[i+1]] = replacement
     obj = obj[part]
   return obj
 
