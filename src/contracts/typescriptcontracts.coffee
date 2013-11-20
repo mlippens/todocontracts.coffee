@@ -32,12 +32,15 @@ class ContractedLibrary
     libs = exports[library_path] = {} if typeof exports[library_path] is 'undefined'
     libs[module] = @
 
+  import: (moduleName)->
+    for obj in exportedObjects
+      obj.import moduleName
+
 Interface = class Class
 
   contracts = if Map then new Map else {}
   keys = []
   contractedObject = null
-  path = []
 
   guard = ()->
     if contractedObject isnt null
@@ -49,10 +52,9 @@ Interface = class Class
             contractedObject[k] = guarded
 
   # constructor :: ([ContractedLibrary,Object,Array])
-  constructor: (lib,root,pathToObj)->
-    if typeof root isnt 'undefined' and typeof pathToObj isnt 'undefined'
-      contractedObject = makeObjStructure(pathToObj,root,null)
-      path = pathToObj
+  constructor: (lib,contracted)->
+    if typeof contracted isnt 'undefined'
+      contractedObject = contracted
     lib.add(@)
 
 
@@ -96,43 +98,46 @@ Interface = class Class
       C.setExported(contractedObject,moduleName)
     return true
 
-makeObjStructure = (pathArray,obj,replacement)->
+  import: (moduleName)->
+    if not @isInterface()
+      C.import(contractedObject,moduleName)
+
+
+
+###makeObjStructure = (pathArray,obj,replacement)->
   for part,i in pathArray
     if not obj[part]?
       obj[part] = {}
     if replacement isnt null and i+1 is pathArray.length-1
       obj = obj[part]
       obj[pathArray[i+1]] = replacement
-    obj = obj[part]
-  return obj
+    else
+      obj = obj[part]
+  return obj###
 
 #Todo: test this function.
-define = (name, deps, callback)->
+_define = (name, deps, callback)->
   if typeof define is 'function' and define.amd
       if typeof name isnt 'string'
         cb = deps
+        dependencies = name
       else
         cb = callback
+        dependencies = deps
 
       wrapped_callback = ()->
         i = 0
-        used_arguments = []
         while i < arguments.length
-          lib = deps[i]
+          lib = dependencies[i]
           if exports[library_path][lib]
-            exported_module = {}
             contracted_module = exports[library_path][lib]
             contracted_module.each (e)->
-              #Todo: we need to mimic the structure of the original object here somehow
-              makeObjStructure(e.__path(),exported_module,C.use(e,name))
-            used_arguments[i] = exported_module
-          else
-            used_arguments[i] = C.use arguments[i], name
+              e.import(name)
           i++
-        slice = {}.slice
-        ret = cb.call(@,slice.call(arguments,0))
-        #only supports first-level objects, which is just what we're trying to solve.
-        C.setExported ret,name
+        slice = [].slice
+        ret = cb.apply(@,slice.call(arguments,0))
+        #just return the original value for now...
+        ret
 
       if(not Array.isArray(deps))
         deps = wrapped_callback
@@ -174,7 +179,7 @@ define = (name, deps, callback)->
 exports.Class = Class
 exports.Interface = Interface
 exports.ContractedLibrary = ContractedLibrary
-exports.define = define
+exports.define = _define
 
 return exports
 

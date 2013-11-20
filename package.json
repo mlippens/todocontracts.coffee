@@ -5,7 +5,8 @@
     "dependencies":
         {
             "contracts-js": "git://github.com/froginvasion/contracts.js",
-            "contracts.coffee": "latest"
+            "contracts.coffee": "latest",
+            "backbone": "latest"
         },
     "author": "Michael Lippens"
 }

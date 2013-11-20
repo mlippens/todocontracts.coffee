@@ -1,3 +1,5 @@
+root = exports ? this
+
 require.config
   shim:
     #underscore:
@@ -26,7 +28,10 @@ define 'backbone',[],()->
   return Backbone
 
 define 'contracts-js',[],()->
-  return window['contracts-js']
+  return root['contracts-js']
+
+define 'proxiedBackbone',[],()->
+  return root['proxiedBackbone']
 
 require ['contracts-js','jquery','backbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
 
