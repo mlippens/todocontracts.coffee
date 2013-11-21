@@ -70,6 +70,11 @@ do (view = backbone.View.prototype)->
         unbind: view.unbind
         undelegateEvents: view.undelegateEvents
 
+#mimic and copy the constructor in the prototype, since it is not copied from the function.
+proxy.View.prototype.constructor  = backbone.View
+
+#proxy.Model.prototype.constructor = backbone.Model
+
 ###proxy.Model.extend :: (Any)-> Any
 proxy.Model.extend= backbone.Model.extend
 

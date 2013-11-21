@@ -1,6 +1,6 @@
 define ['jquery',
   'underscore',
-  'backbone',
+  'proxiedBackbone',
   'collections/todos',
   'views/tododetail',
   'text!templates/stats.html',
