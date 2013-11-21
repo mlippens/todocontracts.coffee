@@ -1,9 +1,13 @@
 define ['jquery',
         'underscore',
-        'backbone',
+        'proxiedBackbone',
         'text!templates/todos.html'
         'common'
         'contracts-js'], ($, _, Backbone, todosTemplate, Common, C)->
+
+  #import from contract system
+  C.import Backbone.View, "TodoDetail View"
+
   class TodoView extends Backbone.View
     tagName: 'li',
 

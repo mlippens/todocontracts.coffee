@@ -1,4 +1,8 @@
-define ['backbone','contracts-js','text!templates/category-overview.html'],(Backbone,C,template)->
+define ['proxiedBackbone','contracts-js','text!templates/category-overview.html'],(Backbone,C,template)->
+
+  #import from contract system
+  C.import Backbone.View, "Category View"
+
   class CategoryOverview extends Backbone.View
 
     el: '#todoapp'

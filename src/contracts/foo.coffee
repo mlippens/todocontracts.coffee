@@ -3,7 +3,26 @@ root = exports ? this
 backbone =  root['Backbone']
 C        =  root['contracts-js']
 
-Obj = ?! (x)-> x isnt null and typeof x is 'object'
+
+Silencable = ? {
+  silent: Bool
+}
+
+Arr = ? {
+  length: !(x)-> typeof x is "number"
+}
+
+Obj         = ?! (x)-> x isnt null and typeof x is 'object'
+Model       = ?!(x)-> x instanceof Backbone.Model
+View        = ?!(x)-> x instanceof Backbone.View
+Router      = ?!(x)-> x instanceof Backbone.Router
+Collection  = ?!(x)-> x instanceof Backbone.Collection
+Events      = ?!(x)-> x instanceof Backbone.Events
+History     = ?!(x)-> x instanceof Backbone.History
+
+Constructor = ?(Any) ==> Any
+
+
 
 events = {}
 events['on']          = ?(Any, (Any) -> Any) -> Any
@@ -18,41 +37,52 @@ events['listenTo']    = ?(Obj,Str,(Any) -> Any) -> Any
 #een contract is etc
 proxy ::
   VERSION: Str
-  View: (Any) ==> Any
-  Model: (Any) ==> Any
+  View:       !Constructor
+  Model:      !Constructor
+  Router:     !Constructor
+  Collection: !Constructor
+  Events:     !Constructor
+  History:    !Constructor
 proxy =
   VERSION: backbone.VERSION
   View: backbone.View.bind({})
   Model: backbone.Model.bind({})
+  Router: backbone.Router.bind({})
+  Collection: backbone.Router.bind({})
+  Events: backbone.Events.bind({})
+  History: backbone.History.bind({})
 
 View_prototype = ? {
-  on: !events['on']
-  off: !events['off']
-  trigger: !events['trigger']
-  bind: !events['bind']
-  unbind: !events['unbind']
-  listenTo: !events['listenTo']
-  tagName: Str
-  initialize: (Any) -> Any
-  $: (Str)-> Any
-  setElement: (Any, Bool) -> Any
-  render: (Any) -> Any
-  remove: (Any) -> Any
-  delegateEvents: (Any) -> Any
-  undelegateEvents: (Any) -> Any
+  on:                 !events['on']
+  off:                !events['off']
+  trigger:            !events['trigger']
+  bind:               !events['on']
+  unbind:             !events['off']
+  listenTo:           !events['listenTo']
+  tagName:            Str
+  initialize:         (Any) -> Any
+  $:                  (Str)-> Any
+  setElement:         (Any, Bool) -> Any
+  render:             (Any) -> Any
+  remove:             (Any) -> Any
+  delegateEvents:     (Any) -> Any
+  undelegateEvents:   (Any) -> Any
 }
 
-Model_prototype = ? {
-}
 
 proxy.View.extend :: (Any)-> Any
 proxy.View.extend =  backbone.View.extend
+
+proxy.Model.extend :: (Any)-> Any
+proxy.Model.extend= backbone.Model.extend
+
 
 do (view = backbone.View.prototype)->
   proxy.View.prototype :: View_prototype
   proxy.View.prototype =
         _configure: view._configure
         _ensureElement: view._ensureElement
+        constructor: backbone.View
         initialize: view.initialize
         $: view.$
         bind: view.bind
@@ -70,49 +100,83 @@ do (view = backbone.View.prototype)->
         unbind: view.unbind
         undelegateEvents: view.undelegateEvents
 
-#mimic and copy the constructor in the prototype, since it is not copied from the function.
-proxy.View.prototype.constructor  = backbone.View
 
+Model_prototype = ? {
+  bind:         !events['on']
+  unbind:       !events['off']
+  on:           !events['on']
+  off:          !events['off']
+  trigger:      !events['trigger']
+  listenTo:     !events['listenTo']
+
+  idAttribute:  Str
+  changed:      Null or Arr
+  changedAttributes: (Any)-> Arr
+  clear:        (Silencable?) -> Any
+  clone:        () -> Any
+  destroy:      (Obj?) -> Any
+  escape:       (Str) -> Str
+  get:          (Str) -> Any
+  has:          (Str) -> Bool
+  hasChanged:   (Str?)-> Bool
+  isNew:        ()-> Bool
+  isValid:      ()-> Bool
+  previous:     (Str)-> Bool
+  previousAttributes: ()-> Arr
+  set:          (Any) -> Any #mult options?
+  save:         (Any,Obj)->Any
+  unset:        (Str,Silencable?)-> Obj
+  url:          Any
+  parse:        (Any,Any)->Any
+  toJSON:       (Any)->Any
+  sync:         (Arr)->Any
+}
+
+do (model = backbone.Model.prototype)->
+  proxy.Model.prototype :: Model_prototype
+  proxy.Model.prototype=
+        bind: model.bind
+        changed: model.changed
+        changedAttributes: model.changedAttributes
+        clear: model.clear
+        clone: model.clone
+        constructor: backbone.Model
+        destroy: model.destroy
+        escape: model.escape
+        fetch: model.fetch
+        get: model.get
+        has: model.has
+        hasChanged: model.hasChanged
+        idAttribute: model.idAttribute
+        initialize: model.initialize
+        isNew: model.isNew
+        isValid: model.isValid
+        listenTo: model.listenTo
+        off: model.off
+        on: model.on
+        once: model.once
+        parse: model.parse
+        previous: model.previous
+        previousAttributes: model.previousAttributes
+        save: model.save
+        set: model.set
+        stopListening: model.stopListening
+        sync: model.sync
+        toJSON: model.toJSON
+        trigger: model.trigger
+        unbind: model.unbind
+        unset: model.unset
+        url: model.url
+
+#mimic and copy the constructor in the prototype, since it is not copied from the function.
+#proxy.View.prototype.constructor  = backbone.View
 #proxy.Model.prototype.constructor = backbone.Model
 
-###proxy.Model.extend :: (Any)-> Any
-proxy.Model.extend= backbone.Model.extend
+#todo: fix this, doesn't work for some weird reason(?)
+###for name of proxy
+  C.setExported proxy[name], "Backbone.#{name}"###
 
-proxy.Model.prototype :: Model_prototype
-proxy.Model.prototype=
-      bind: backbone.Model.prototype.bind
-      changed: backbone.Model.prototype.changed
-      changedAttributes: backbone.Model.prototype.changedAttributes
-      clear: backbone.Model.prototype.clear
-      clone: backbone.Model.prototype.clone
-      constructor: backbone.Model.prototype.constructor
-      destroy: backbone.Model.prototype.destroy
-      escape: backbone.Model.prototype.escape
-      fetch: backbone.Model.prototype.fetch
-      get: backbone.Model.prototype.get
-      has: backbone.Model.prototype.has
-      hasChanged: backbone.Model.prototype.hasChanged
-      initialize: backbone.Model.prototype.initialize
-      isNew: backbone.Model.prototype.isNew
-      isValid: backbone.Model.prototype.isValid
-      listenTo: backbone.Model.prototype.listenTo
-      off: backbone.Model.prototype.off
-      on: backbone.Model.prototype.on
-      once: backbone.Model.prototype.once
-      parse: backbone.Model.prototype.parse
-      previous: backbone.Model.prototype.previous
-      previousAttributes: backbone.Model.prototype.previousAttributes
-      save: backbone.Model.prototype.save
-      set: backbone.Model.prototype.set
-      stopListening: backbone.Model.prototype.stopListening
-      sync: backbone.Model.prototype.sync
-      toJSON: backbone.Model.prototype.toJSON
-      trigger: backbone.Model.prototype.trigger
-      unbind: backbone.Model.prototype.unbind
-      unset: backbone.Model.prototype.unset
-      url: backbone.Model.prototype.url###
-
-C.setExported proxy.View.prototype, "Backbone View"
-C.setExported proxy.Model.prototype, "Backbone Model"
+C.setExported proxy.View, "Backbone.View"
+C.setExported proxy.Model, "Backbone.Model"
 
 root['proxiedBackbone'] = proxy

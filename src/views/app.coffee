@@ -8,6 +8,10 @@ define ['jquery',
   'common'
   'contracts-js'],
   ($, _,Backbone, Todos, TodoView, statsTemplate,overviewTemplate, Common, C)->
+
+    #import into the contract system.
+    C.import(Backbone.View,"App View")
+
     class AppView extends Backbone.View
 
       #context of this view
