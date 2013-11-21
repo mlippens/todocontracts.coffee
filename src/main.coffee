@@ -20,18 +20,21 @@ require.config
 
 define 'jquery',[],()->
   return jQuery
-
 define 'underscore',[],()->
   return _
-
 define 'backbone',[],()->
   return Backbone
-
 define 'contracts-js',[],()->
   return root['contracts-js']
 
-define 'proxiedBackbone',[],()->
-  return root['proxiedBackbone']
+CONTRACTS_FLAG = true
+#contracts switch
+if CONTRACTS_FLAG
+  define 'proxiedBackbone',[],()->
+    return root['proxiedBackbone']
+else
+  define 'proxiedBackbone',[],()->
+    return root.Backbone
 
 require ['contracts-js','jquery','backbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
 

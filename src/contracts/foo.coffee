@@ -135,6 +135,7 @@ Model_prototype = ? {
 do (model = backbone.Model.prototype)->
   proxy.Model.prototype :: Model_prototype
   proxy.Model.prototype=
+        _validate: model._validate
         bind: model.bind
         changed: model.changed
         changedAttributes: model.changedAttributes

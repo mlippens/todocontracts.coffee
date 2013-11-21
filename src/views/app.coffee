@@ -42,7 +42,7 @@ define ['jquery',
         #render is triggered on all events
         @listenTo Todos, 'all', @render
 
-        @listenTo false
+        #@listenTo false
         #triggers reset
         Todos.fetch()
 
