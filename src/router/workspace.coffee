@@ -1,4 +1,4 @@
-define ['common','collections/todos','views/app','views/category','backbone'],(Common,Todos,AppView,CategoryView,Backbone)->
+define ['common','collections/todos','views/app','views/category','proxiedBackbone'],(Common,Todos,AppView,CategoryView,Backbone)->
   class Workspace extends Backbone.Router
     routes:
       ''            : 'home'

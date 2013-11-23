@@ -35,7 +35,11 @@ Extend      = ?(Any)-> Any
 events = {}
 events['on']          = ?(Str, ((Any?) -> Any?)?,Any?) -> Any
 events['off']         = ?(Str?,((Any?) -> Any?)?,Any?) -> Any
-events['trigger']     = ?(Str,Arr) -> Any
+
+#original:
+#events['trigger']     = ?(Str,Arr) -> Any
+events['trigger']      = ?(Str,Obj?,Any?)->Any
+
 #identical to on and off just aliases
 ###events['bind']        = ?(Str,(Any) -> Any) -> Any
 events['unbind']      = ?(Str,(Any) -> Any) -> Any###
@@ -138,7 +142,9 @@ Model_prototype = ? {
   url:          Any
   parse:        (Any,Any?)->Any
   toJSON:       (Any?)->Any
-  sync:         (Arr)->Any
+  sync:         (Str,Obj,Obj?)-> Any
+  #original
+  #sync:         (Arr)->Any
 
 ###  #underscore mixins
   keys:         ()->[...Str]

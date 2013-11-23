@@ -42,7 +42,7 @@ define ['jquery',
         #render is triggered on all events
         @listenTo Todos, 'all', @render
 
-        @listenTo false
+        #@listenTo false
         #triggers reset
         Todos.fetch()
 
@@ -79,19 +79,15 @@ define ['jquery',
       filterAll: ()->
         Todos.each(@filterOne, @)
 
-      newAttributes: C.guard(C.fun(C.Any,C.object({title: C.Str,order: C.Num, completed: C.Bool})),()->
+      newAttributes: ()->
         title: @$input.val().trim()
         order: Todos.nextOrder()
-        completed: false)
+        completed: false
 
-      #Simplified test for an Event contract
-      isEvent: C.check(((e)->
-        e.which isnt 'undefined'),'Event')
-
-      createOnEnter: C.guard(C.fun(@.prototype.isEvent,C.Any),(e)->
+      createOnEnter: (e)->
         if !(e.which != Common.ENTER_KEY || !@$input.val().trim())
           Todos.create @newAttributes()
-          @$input.val '')
+          @$input.val ''
 
       clearCompleted: ()->
         _.invoke Todos.completed(), 'destroy'

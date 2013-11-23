@@ -3,20 +3,20 @@ define ['backbone','models/todo','backboneLocalStorage','contracts-js'],(Backbon
     model: TodoModel
     localStorage: new Store('todos-storage')
 
-    completed: C.guard(C.fun(C.Any, C.Arr),()->
+    completed: ()->
         @filter (todo)->
-          todo.get 'completed')
+          todo.get 'completed'
 
-    remaining: C.guard(C.fun(C.Any,C.Arr),()->
-        @without.apply(@,@completed()))
+    remaining: ()->
+        @without.apply(@,@completed())
 
-    nextOrder: C.guard(C.fun(C.Any,C.Num),()->
+    nextOrder: ()->
         if !@length
           1
         else
-          @last().get('order') + 1)
+          @last().get('order') + 1
 
-    comparator: C.guard(C.fun(C.Any, C.Num),(todo)->
-        todo.get 'order')
+    comparator: (todo)->
+        todo.get 'order'
 
   new Todos()
