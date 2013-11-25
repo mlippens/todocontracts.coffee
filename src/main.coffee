@@ -36,7 +36,7 @@ else
   define 'proxiedBackbone',[],()->
     return root.Backbone
 
-require ['contracts-js','jquery','backbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
+require ['contracts-js','jquery','proxiedBackbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
 
   new AppView()
   Backbone.history.start()

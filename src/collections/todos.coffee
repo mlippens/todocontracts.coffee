@@ -1,4 +1,4 @@
-define ['backbone','models/todo','backboneLocalStorage','contracts-js'],(Backbone,TodoModel,Store,C)->
+define ['proxiedBackbone','models/todo','backboneLocalStorage','contracts-js'],(Backbone,TodoModel,Store,C)->
   class Todos extends Backbone.Collection
     model: TodoModel
     localStorage: new Store('todos-storage')

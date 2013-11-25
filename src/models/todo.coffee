@@ -1,6 +1,6 @@
-define ['proxiedBackbone','contracts-js'],(Backbone,C)->
+define ['backbone','contracts-js'],(Backbone,C)->
 
-  C.import Backbone.Model,"Todo Model"
+  #C.import Backbone.Model,"Todo Model"
 
   class Todo extends Backbone.Model
     defaults:

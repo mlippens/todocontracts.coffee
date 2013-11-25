@@ -36,14 +36,10 @@ define ['jquery',
     toggleVisible: ()->
       @$el.toggleClass('hidden', @isHidden());
 
-
-
-    isHidden: C.guard(C.fun(C.Any,C.Bool), ()->
+    isHidden: ()->
       isCompleted = @model.get 'completed'
       (!isCompleted && Common.TodoFilter == 'completed') ||
-      (isCompleted && Common.TodoFilter == 'active'))
-
-    TodoView.prototype.isHidden.__contract__ = C.fun(C.Any,C.Bool)
+      (isCompleted && Common.TodoFilter == 'active')
 
     toggleCompleted: ()->
       @model.toggle()

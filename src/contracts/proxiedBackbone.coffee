@@ -5,8 +5,14 @@ C        =  root['contracts-js']
 
 
 Silencable = ? {
-  silent: Bool
+  silent: Bool?
 }
+AddOptions = ? {
+  parse:  Bool?
+  previousModels: [...Model]?
+  success: (Any?)->Any
+}
+
 NavigateOptions = ? {
   trigger: Bool
 }
@@ -21,12 +27,19 @@ Arr = ? {
 
 
 Obj         = ?!(x)-> x isnt null and typeof x is 'object'
-Model       = ?!(x)-> x instanceof Backbone.Model
+###Model       = ?!(x)-> x instanceof Backbone.Model
 View        = ?!(x)-> x instanceof Backbone.View
 Router      = ?!(x)-> x instanceof Backbone.Router
 Collection  = ?!(x)-> x instanceof Backbone.Collection
 Events      = ?!(x)-> x instanceof Backbone.Events
-History     = ?!(x)-> x instanceof Backbone.History
+History     = ?!(x)-> x instanceof Backbone.History###
+
+Model       = ?!(x)-> true
+View        = ?!(x)-> true
+Router      = ?!(x)-> true
+Collection  = ?!(x)-> true
+Events      = ?!(x)-> true
+History     = ?!(x)-> true
 
 Constructor = ?(Any) ==> Any
 Extend      = ?(Any)-> Any
@@ -44,6 +57,7 @@ events['trigger']      = ?(Str,Obj?,Any?)->Any
 ###events['bind']        = ?(Str,(Any) -> Any) -> Any
 events['unbind']      = ?(Str,(Any) -> Any) -> Any###
 events['listenTo']    = ?(Obj,Str,(Any?) -> Any) -> Any
+#deprecated so it seems
 #events['listenToOnce']= ?(Obj,Str,(Any?) -> Any)-> Any
 events['stopListening']=?(Obj?,Str?,((Any?)->Any)?)->Any
 events['once']        =?(Str,((Any?)->Any),Any?)->Any
@@ -57,6 +71,7 @@ proxy ::
   Collection: !Constructor
   Events:     !Constructor
   History:    !Constructor
+  history:    !History
 proxy =
   VERSION:    backbone.VERSION
   View:       backbone.View.bind({})
@@ -65,6 +80,7 @@ proxy =
   Collection: backbone.Router.bind({})
   Events:     backbone.Events.bind({})
   History:    backbone.History.bind({})
+  history:    backbone.history
 
 Router_prototype = ? {
   route:      (Str,Str,((Any?)->Any?)?)->Any
@@ -95,6 +111,8 @@ History_prototype = ? {
 }
 
 View_prototype = ? {
+  _configure:         (Obj)->Any
+
   on:                 !events['on']
   off:                !events['off']
   trigger:            !events['trigger']
@@ -156,24 +174,39 @@ Model_prototype = ? {
 }
 
 Collection_prototype = ? {
-  model: Any
-  models: Any
-  collection: Model
-  length: Num
+  model: (Any?)->Any
 
-  #fetch
-  comparator: (Model,Model?)->Any
+  #models: Any
+  #collection: Model
+  #length: Num
 
-  add: (Model or Arr, Obj?) -> Any
+  #comparator: (Model,Model?)->Any
+
+  add: (Model or [...Model],Silencable?, AddOptions?) -> Any
   at: (Num)-> Model
-  get: (Any)-> Model
+  bind: !events['on']
   create: (Any, Any)-> Model
-  pluk: (Str)-> Any
+  #clone
+  get: (Any)-> Model
+  #fetch
+  on:   !events['on']
+  off:  !events['off']
+  once: !events['once']
+  #parse
+  pluck: (Str)-> Any
+  push: (Model,AddOptions?)->Model
   pop: (Silencable?)-> Model
-  remove: (Model or Arr, Silencable?)-> Model or Arr
-  reset:  (Arr,Silencable?)-> Model
+  remove: (Model or [...Model], Silencable?)-> Model or [...Model]
+  reset:  ([...Model]?,Silencable?)->[...Model]
   shift:  (Silencable?)-> Model
+  #slice
   sort:   (Silencable?)-> Collection
+  #sortedIndex:
+  stopListening: !events['stopListening']
+  #sync
+  trigger: !events['trigger']
+  unbind: !events['off']
+  #update
   unshift: (Model,Any)-> Model
   where: (Any)-> Arr
 
@@ -184,25 +217,29 @@ Collection_prototype = ? {
   any:        (((Model,Num)->Bool),Any?)->Bool
   collect:    (((Model,Num,Any?)->Arr),Any?)->Arr
   chain:      ()-> Any
-  compact:    ()-> [...Model]
+  #@dep compact:    ()-> [...Model]
   contains:   (Any)->Bool
   countBy:    (Str or (Model,Num)->Any)-> Arr
   detect:     (((Any)->Bool),Any?)-> Any
-  difference: ([...Model])->[...Model]
+  #@dep difference: ([...Model])->[...Model]
   drop:       (Num?)-> Model or [...Model]
-  each:       (Model,Num,Any?)->Any
+  #out of date... each:       (Model,Num,Any?)->Any
   every:      (((Model,Num)->Bool),Any?)->Bool
   filter:     (((Model,Num)->Bool),Any?)->[...Model]
   find:       (((Model,Num)->Bool),Any?)->Model
   first:      (Num?)->Model or [...Model]
-  flatten:    (Bool?)-> [...Model]
+  #@deprecated flatten:    (Bool?)-> [...Model]
   foldl:      (((Any,Model,Num)->Any),Any,Any?)->Any
+  foldr:      (((Any,Model,Num)->Any),Any,Any?)->Any
   forEach:    (((Model,Num,Any?)->Any),Any?)->Any
+  #todo: implement
+  #groupBy:
+  #head
   include:    (Any)->Bool
   indexOf:    (Model,Bool?)->Num
   initial:    (Num?)->Model or [...Model]
   inject:     (((Any,Model,Num)->Any),Any,Any?)->Any
-  intersection: ([...Model])->[...Model]
+  #@deprecated intersection: ([...Model])->[...Model]
   isEmpty:     (Any)->Bool
   invoke:     (Str,Arr)->Any
   last:       (Num?)->Model or [...Model]
@@ -210,29 +247,38 @@ Collection_prototype = ? {
   map:        (((Model,Num,Any?)->Arr),Any?)->Arr
   max:        (((Model,Num,Any?)->Any)?,Any?)->Model
   min:        (((Model,Num,Any?)->Any)?,Any?)->Model
-  object:     (Arr)->Arr
+
+  #@deprecated object:     (Arr)->Arr
   reduce:     (((Any,Model,Num)->Any),Any,Any?)->Any
   select:     (Any,Any?)->Arr
   size:       ()->Num
   shuffle:    ()->Arr
   some:       (((Model,Num)->Any),Any?)->Bool
-  sortBy:     ((Str or ((Model,Num)->Num)),Any?)->[...Model]
+  #out of date... sortBy:     ((Str or ((Model,Num)->Num)),Any?)->[...Model]
   sortedIndex:(Model,((Model,Num)->Num)?)->Num
-  range:      (Num,Num?,Num?)->Any
+  #@dep range:      (Num,Num?,Num?)->Any
   #wat nu? kan alleen als laatste twee optional zijn :)
   #range(stop: number, step?: number): any;
   #range(start: number, stop: number, step?: number): any;
+
   reduceRight:(((Any,Model,Num)->Any),Any,Any?)->Arr
   reject:     (((Model,Num)->Bool),Any?)->[...Model]
   #deze gaan wel werken maar ze zijn te "weak"
   #we maken de één optioneel en de andere dan met or
   rest:       (Num?)->Model or [...Model]
+  #select
+  #shuffle
+  #size
+  #some
+  #sortBy
   tail:       (Num?)->Model or [...Model]
+  #take
   toArray:    ()->Arr
-  union:      ([...Model])->[...Model]
-  uniq:       (Bool?,((Model,Num)->Bool)?)->[...Model]
-  without:    (Arr)->[...Model]
-  zip:        ([...Model])->[...Model]
+  #toJSON
+  #@dep union:      ([...Model])->[...Model]
+  #@dep uniq:       (Bool?,((Model,Num)->Bool)?)->[...Model]
+  without:    ([...Model]?)->[...Model]
+  #@dep zip:        ([...Model])->[...Model]
 }
 
 copyProps = (obj)->
@@ -243,20 +289,22 @@ copyProps = (obj)->
 
 copyAndProxyPrototype = (orig,contract,constructor)->
   result = copyProps(orig)
+  result.constructor = constructor
   result :: contract
   result = result
-  result.constructor = constructor
   return result
 
 proxy.View.prototype  = copyAndProxyPrototype(backbone.View.prototype, View_prototype, backbone.View)
-proxy.Model.prototype = copyAndProxyPrototype(backbone.Model.prototype, Model_prototype, backbone.Model)
+#proxy.Model.prototype = copyAndProxyPrototype(backbone.Model.prototype, Model_prototype, backbone.Model)
 proxy.Router.prototype= copyAndProxyPrototype(backbone.Router.prototype, Router_prototype, backbone.Router)
 #todo adapt contracts
-#proxy.Collection.prototype= copyAndProxyPrototype(backbone.Collection.prototype,Collection_prototype, backbone.Collection)
+proxy.Collection.prototype= copyAndProxyPrototype(backbone.Collection.prototype,Collection_prototype, backbone.Collection)
 proxy.History.prototype=  copyAndProxyPrototype(backbone.History.prototype,History_prototype,backbone.History)
 
 
 C.setExported proxy.View, "Backbone.View"
 C.setExported proxy.Model, "Backbone.Model"
+C.setExported proxy.History, "Backbone.History"
+C.setExported proxy.Router, "Backbone.Router"
 
 root['proxiedBackbone'] = proxy
