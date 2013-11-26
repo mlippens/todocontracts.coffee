@@ -26,20 +26,26 @@ Arr = ? {
 }
 
 
-Obj         = ?!(x)-> x isnt null and typeof x is 'object'
-###Model       = ?!(x)-> x instanceof Backbone.Model
-View        = ?!(x)-> x instanceof Backbone.View
-Router      = ?!(x)-> x instanceof Backbone.Router
-Collection  = ?!(x)-> x instanceof Backbone.Collection
-Events      = ?!(x)-> x instanceof Backbone.Events
-History     = ?!(x)-> x instanceof Backbone.History###
+Obj         = ?!(x)-> if _.isUndefined(x) or _.isNull(x) or _.isObject(x)
+                        true
+                      else
+                        false
 
-Model       = ?!(x)-> true
-View        = ?!(x)-> true
-Router      = ?!(x)-> true
-Collection  = ?!(x)-> true
-Events      = ?!(x)-> true
-History     = ?!(x)-> true
+Model       = ?!(x)-> x instanceof Backbone.Model or _.isUndefined(x)
+View        = ?!(x)-> x instanceof Backbone.View or _.isUndefined(x)
+Router      = ?!(x)-> x instanceof Backbone.Router or _.isUndefined(x)
+Collection  = ?!(x)-> x instanceof Backbone.Collection or _.isUndefined(x)
+Events      = ?!(x)-> x instanceof Backbone.Events or _.isUndefined(x)
+History     = ?!(x)-> x instanceof Backbone.History or _.isUndefined(x)
+
+###
+Model       = ?Obj
+View        = ?Obj
+Router      = ?Obj
+Collection  = ?Obj
+Events      = ?Obj
+History     = ?Obj
+###
 
 Constructor = ?(Any) ==> Any
 Extend      = ?(Any)-> Any
@@ -211,7 +217,9 @@ Collection_prototype = ? {
 
   #comparator: (Model,Model?)->Any
 
-  add: (Model or [...Model],Silencable?, AddOptions?) -> Any
+  #add: (Model or [...Model],Silencable?, AddOptions?) -> Any
+  add: (Arr or Obj,Silencable?,AddOptions?)->Any
+
   at: (Num)-> Model
   bind: !events['on']
   create: (Any, Any)-> Model
