@@ -52,7 +52,6 @@ events['off']         = ?(Str?,((Any?) -> Any?)?,Any?) -> Any
 #original:
 #events['trigger']     = ?(Str,Arr) -> Any
 events['trigger']      = ?(Str,Obj?,Any?)->Any
-
 #identical to on and off just aliases
 ###events['bind']        = ?(Str,(Any) -> Any) -> Any
 events['unbind']      = ?(Str,(Any) -> Any) -> Any###
@@ -64,23 +63,51 @@ events['once']        =?(Str,((Any?)->Any),Any?)->Any
 
 
 proxy ::
-  VERSION:    Str
+  $:          (Any)-> Any
   View:       !Constructor
   Model:      !Constructor
   Router:     !Constructor
   Collection: !Constructor
   Events:     !Constructor
   History:    !Constructor
+  VERSION:    Str
+  bind:       !events['on']
+  emulateHTTP:Bool
+  emulateJSON:Bool
   history:    !History
+  listenTo:   !events['listenTo']
+  localSync:  Any
+  noConflict: Any
+  off:        !events['off']
+  on:         !events['on']
+  once:       !events['once']
+  stopListening: !events['stopListening']
+  sync:       Any
+  trigger:    !events['trigger']
+  unbind:     !events['off']
 proxy =
-  VERSION:    backbone.VERSION
+  $:          backbone.$
   View:       backbone.View.bind({})
   Model:      backbone.Model.bind({})
   Router:     backbone.Router.bind({})
-  Collection: backbone.Router.bind({})
+  Collection: backbone.Collection.bind({})
   Events:     backbone.Events.bind({})
   History:    backbone.History.bind({})
+  VERSION:    backbone.VERSION
+  bind:       backbone.bind
+  emulateHTTP: backbone.emulateHTTP
+  emulateJSON: backbone.emulateJSON
   history:    backbone.history
+  listenTo:   backbone.listenTo
+  localSync:  backbone.localSync
+  noConflict: backbone.noConflict
+  off:        backbone.off
+  on:         backbone.on
+  once:       backbone.once
+  stopListening: backbone.stopListening
+  sync:       backbone.sync
+  trigger:    backbone.trigger
+  unbind:     backbone.unbind
 
 Router_prototype = ? {
   route:      (Str,Str,((Any?)->Any?)?)->Any
@@ -152,15 +179,17 @@ Model_prototype = ? {
   hasChanged:   (Str?)-> Bool
   isNew:        ()-> Bool
   isValid:      ()-> Bool
-  previous:     (Str)-> Bool
+  previous:     (Str)-> Any
+  #previous: (Str)-> Bool This failed but no contract violation. Hmm?
   previousAttributes: ()-> Arr
   set:          (Any) -> Any #mult options?
   save:         (Any?,Any?)->Any
   unset:        (Str,Silencable?)-> Obj
   url:          Any
   parse:        (Any,Any?)->Any
-  toJSON:       (Any?)->Any
+  #toJSON:       (Any?)->Any fails despite being most general function contract(?)
   sync:         (Str,Obj,Obj?)-> Any
+
   #original
   #sync:         (Arr)->Any
 
@@ -197,7 +226,9 @@ Collection_prototype = ? {
   push: (Model,AddOptions?)->Model
   pop: (Silencable?)-> Model
   remove: (Model or [...Model], Silencable?)-> Model or [...Model]
-  reset:  ([...Model]?,Silencable?)->[...Model]
+
+  #CAUSES ERROR: when an Array is passed to reset is suddenly is an object and not an array anymore?! wtf
+  #reset:  ([...Model]?,Silencable?)->[...Model]
   shift:  (Silencable?)-> Model
   #slice
   sort:   (Silencable?)-> Collection
@@ -281,21 +312,23 @@ Collection_prototype = ? {
   #@dep zip:        ([...Model])->[...Model]
 }
 
-copyProps = (obj)->
-  result = {}
+copyProps = (obj,result)->
+  if result is null
+    result = {}
   for own prop of obj
     result[prop] = obj[prop]
   result
 
 copyAndProxyPrototype = (orig,contract,constructor)->
-  result = copyProps(orig)
+  result = copyProps(orig,Object.create(orig))
   result.constructor = constructor
   result :: contract
   result = result
   return result
 
+
 proxy.View.prototype  = copyAndProxyPrototype(backbone.View.prototype, View_prototype, backbone.View)
-#proxy.Model.prototype = copyAndProxyPrototype(backbone.Model.prototype, Model_prototype, backbone.Model)
+proxy.Model.prototype = copyAndProxyPrototype(backbone.Model.prototype, Model_prototype, backbone.Model)
 proxy.Router.prototype= copyAndProxyPrototype(backbone.Router.prototype, Router_prototype, backbone.Router)
 #todo adapt contracts
 proxy.Collection.prototype= copyAndProxyPrototype(backbone.Collection.prototype,Collection_prototype, backbone.Collection)

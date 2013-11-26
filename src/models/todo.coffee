@@ -1,4 +1,4 @@
-define ['backbone','contracts-js'],(Backbone,C)->
+define ['proxiedBackbone','contracts-js'],(Backbone,C)->
 
   #C.import Backbone.Model,"Todo Model"
 
