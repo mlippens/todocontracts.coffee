@@ -1,7 +1,7 @@
 define ['proxiedBackbone','contracts-js','text!templates/category-overview.html'],(Backbone,C,template)->
 
   #import from contract system
-  C.import Backbone.View, "Category View"
+  #C.import Backbone.View, "Category View"
 
   class CategoryOverview extends Backbone.View
 

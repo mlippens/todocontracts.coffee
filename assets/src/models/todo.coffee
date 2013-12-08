@@ -6,6 +6,8 @@ define ['proxiedBackbone','contracts-js'],(Backbone,C)->
     defaults:
       title: ''
       completed: false
+      
+    idAttribute: "_id"
 
     #not useful to guard, it should be in backbone.js
     toggle: ()->

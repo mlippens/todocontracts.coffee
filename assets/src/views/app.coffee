@@ -2,15 +2,17 @@ define ['jquery',
   'underscore',
   'proxiedBackbone',
   'collections/todos',
+  'models/todo',
   'views/tododetail',
   'text!templates/stats.html',
   'text!templates/todo-overview.html',
   'common'
-  'contracts-js'],
-  ($, _,Backbone, Todos, TodoView, statsTemplate,overviewTemplate, Common, C)->
+  'contracts-js'
+  'socketio'],
+  ($, _,Backbone, Todos, TodoModel, TodoView, statsTemplate,overviewTemplate, Common, C,Socket)->
 
     #import into the contract system.
-    C.import(Backbone.View,"App View")
+    #C.import(Backbone.View,"App View")
 
     class AppView extends Backbone.View
 
@@ -25,6 +27,26 @@ define ['jquery',
         'click #toggle-all': 'toggleAllComplete'
 
       initialize: ()->
+        @connection = Socket.connect "http://localhost:4711"
+
+        #we register all the events that require us to change our application view/state
+        @connection.on "add",(data)->
+          console.log Todos
+          todo = new TodoModel(data)
+          Todos.add todo if not Todos.any (t)->t.get('_id') == data.id
+
+        @connection.on "update",(data)->
+          todo = Todos.filter (t)-> t.get('_id') == data._id
+          todo[0].set(data) if todo.length isnt 0
+
+        @connection.on "remove",(data)->
+          todo = Todos.filter (t)-> t.get('_id') == data._id
+          Todos.remove(todo[0]) if todo.length isnt 0
+          Todos.trigger 'reset'
+
+
+
+
         @$el.html(_.template(overviewTemplate,{}))
         @allCheckbox = @.$('#toggle-all')[0]
         #mimic backbone style
@@ -33,6 +55,8 @@ define ['jquery',
         @$main = @.$('#main')
         #on added
         @listenTo Todos, 'add', @addOne
+        #now we use socket to add
+
         #on fetch (see stacktrace)
         @listenTo Todos, 'reset', @addAll
         #on a change of the completed field

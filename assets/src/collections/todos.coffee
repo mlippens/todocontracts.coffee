@@ -1,7 +1,8 @@
 define ['proxiedBackbone','models/todo','backboneLocalStorage','contracts-js'],(Backbone,TodoModel,Store,C)->
   class Todos extends Backbone.Collection
     model: TodoModel
-    localStorage: new Store('todos-storage')
+    #localStorage: new Store('todos-storage')
+    url: '/rest/todos'
 
     completed: ()->
         @filter (todo)->

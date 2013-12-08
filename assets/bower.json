@@ -9,7 +9,8 @@
         "todomvc-common": "~0.1.4",
         "backbone-relational": "latest",
         "requirejs": "~2.1.5",
-        "requirejs-text": "~2.0.5"
+        "requirejs-text": "~2.0.5",
+        "socket.io": "latest"
     }
 }
 

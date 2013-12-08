@@ -3,4 +3,6 @@ define ['contracts-js','backbone','collections/todos'], (C,Backbone,Todos)->
     defaults:
       name: ''
 
+    idAttribute: '_id'
+
   Category

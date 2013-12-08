@@ -17,6 +17,7 @@ require.config
     #'backbone': '../bower_components/backbone/backbone',
     'backboneLocalStorage': '../bower_components/backbone.localStorage/backbone.localStorage',
     'text': '../bower_components/requirejs-text/text'
+    'socketio': '/socket.io/socket.io'
 
 define 'jquery',[],()->
   return jQuery
@@ -38,7 +39,7 @@ else
 
 require ['contracts-js','jquery','proxiedBackbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
 
-  new AppView()
+  new Workspace()
   Backbone.history.start()
 
 
