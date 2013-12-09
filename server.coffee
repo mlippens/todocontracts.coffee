@@ -36,11 +36,53 @@ Todo = new mongoose.Schema
   completed: Boolean
   order: Number
 
+Session = new mongoose.Schema
+  uri: String
+  todos: [Todo]
+
+SessionModel = mongoose.model 'Session',Session
 TodoModel = mongoose.model 'Todo',Todo
 
 
 app.get '/rest',(req,resp)->
   resp.send "running!"
+
+
+app.get '/rest/sessions', (req,resp)->
+  SessionModel.find (err,sessions)->
+    return resp.send(sessions) if not err
+    console.log err
+
+app.post '/rest/sessions', (req,resp)->
+  session = new SessionModel
+    title: req.body.title
+    todos: []
+  session.save (err)->
+    console.log 'session created' if not err
+    console.log err
+  resp.send session
+
+app.get 'rest/sessions/:id', (req,resp)->
+  SessionModel.findById req.params.id, (err,session)->
+    return console.log err if err
+    resp.send session
+
+app.put 'rest/sessions/:id', (req,resp)->
+  SessionModel.findById req.params.id, (err,session)->
+    return console.log err if err
+    session.title = req.body.title
+    session.todos = req.body.todos
+    session.save (err)->
+      console.log 'session updated' if not err
+      console.log err
+    resp.send session
+
+app.delete 'rest/sessions/:id', (req,resp)->
+  SessionModel.findById req.params.id, (err,session)->
+    return console.log err if err
+    session.remove (err)->
+      console.log err if err
+    resp.send session
 
 
 app.get '/rest/todos',(req,resp)->

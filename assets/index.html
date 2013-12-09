@@ -4,16 +4,24 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Backbone.js + RequireJS • TodoMVC</title>
+
+    <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="stylesheet" href="css/base.css">
+
+
+
     <script src="bower_components/todomvc-common/base.js"></script>
 
     <!-- load backbone deps -->
     <script src="bower_components/jquery/jquery.js"></script>
+
+    <script src="js/bootstrap.min.js"></script>
+
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/backbone/backbone.js"></script>
     <script src="libs/contracts.js"></script>
 
-<!--    <script src="src/contracts/proxiedBackbone.js"></script>-->
+    <!--    <script src="src/contracts/proxiedBackbone.js"></script>-->
 
     <!--<script src="src/contracts/typescriptcontracts.js"></script>
     <script src="src/contracts/backbone.js"></script>-->
@@ -23,13 +31,20 @@
 
 </head>
 <body>
+
 <section id="todoapp">
 </section>
+<section id="todocreate">
+</section>
+
 <footer id="info">
     <p>Double-click to edit a todo</p>
+
     <p>Written by <a href="http://addyosmani.github.com/todomvc/">Addy Osmani</a></p>
+
     <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
 </footer>
 <script data-main="src/main" src="bower_components/requirejs/require.js"></script>
+
 </body>
 </html>

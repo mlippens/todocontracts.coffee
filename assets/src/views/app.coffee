@@ -27,6 +27,8 @@ define ['jquery',
         'click #toggle-all': 'toggleAllComplete'
 
       initialize: ()->
+        Todos = new Todos()
+
         @connection = Socket.connect "http://localhost:4711"
 
         #we register all the events that require us to change our application view/state

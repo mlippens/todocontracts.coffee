@@ -1,8 +1,9 @@
 define ['contracts-js','backbone','collections/todos'], (C,Backbone,Todos)->
-  class Category extends Backbone.Model
+  class Session extends Backbone.Model
     defaults:
-      name: ''
+      title: ''
+      todos: new Todos()
 
     idAttribute: '_id'
 
-  Category
+  Session
