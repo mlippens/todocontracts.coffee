@@ -17,6 +17,8 @@ define ['jquery',
       @$el.html(_.template SessionTemplate,{})
       @$app = $('#todoapp')
       @$footer = $('#info')
+      @$sessioninfo = @$el.find('#sessioninfo')
+      @$name = @$el.find('input #name')
       @$app.hide()
       @$footer.hide()
 
@@ -26,9 +28,14 @@ define ['jquery',
 
     createSession: (e)->
       e.preventDefault()
-      session = Sessions.create todos: new Todos(), {
+      name = @$name.val() || "Anonymous todolist"
+      that = @
+      session = Sessions.create name: name, {
           wait: true,
-          success: ()-> Backbone.history.navigate 'session/#{session.id}', {trigger:true}
+          success: ->
+            console.log session.id
+            that.$sessioninfo.html('')
+            that.$sessioninfo.html("surf to <a href=\"#/session/#{session.id}\">here</a> to open your todo list!")
         }
 
 

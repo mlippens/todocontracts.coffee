@@ -28,14 +28,16 @@ define ['jquery',
 
       initialize: ()->
         Todos = new Todos()
+        Todos.url = "rest/todos/session/#{@model.id}" if @model
 
         @connection = Socket.connect "http://localhost:4711"
 
+        that = @
         #we register all the events that require us to change our application view/state
         @connection.on "add",(data)->
           console.log Todos
           todo = new TodoModel(data)
-          Todos.add todo if not Todos.any (t)->t.get('_id') == data.id
+          Todos.add todo if (not Todos.any (t)->t.get('_id') == data.id) and that.model?.id is data.session
 
         @connection.on "update",(data)->
           todo = Todos.filter (t)-> t.get('_id') == data._id
@@ -109,6 +111,7 @@ define ['jquery',
         title: @$input.val().trim()
         order: Todos.nextOrder()
         completed: false
+        session: @model.id if @model
 
       createOnEnter: (e)->
         if !(e.which != Common.ENTER_KEY || !@$input.val().trim())

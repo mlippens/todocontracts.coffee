@@ -31,14 +31,17 @@ io = io.listen(app.listen(port,()->
 
 mongoose.connect 'mongodb://localhost/todo_db'
 
+Schema    = mongoose.Schema
+ObjectId  = Schema.ObjectId
+
 Todo = new mongoose.Schema
   title: String
   completed: Boolean
   order: Number
+  session: {type: ObjectId, ref: 'Session'}
 
 Session = new mongoose.Schema
-  uri: String
-  todos: [Todo]
+  name: String
 
 SessionModel = mongoose.model 'Session',Session
 TodoModel = mongoose.model 'Todo',Todo
@@ -55,8 +58,7 @@ app.get '/rest/sessions', (req,resp)->
 
 app.post '/rest/sessions', (req,resp)->
   session = new SessionModel
-    title: req.body.title
-    todos: []
+    name: req.body.name
   session.save (err)->
     console.log 'session created' if not err
     console.log err
@@ -70,8 +72,7 @@ app.get 'rest/sessions/:id', (req,resp)->
 app.put 'rest/sessions/:id', (req,resp)->
   SessionModel.findById req.params.id, (err,session)->
     return console.log err if err
-    session.title = req.body.title
-    session.todos = req.body.todos
+    session.title = req.body.name
     session.save (err)->
       console.log 'session updated' if not err
       console.log err
@@ -86,15 +87,25 @@ app.delete 'rest/sessions/:id', (req,resp)->
 
 
 app.get '/rest/todos',(req,resp)->
-  TodoModel.find (err,todos)->
-    return resp.send(todos) if not err
-    console.log err
+  TodoModel.where('session',null)
+    .exec (err,todos)->
+      return resp.send(todos) if not err
+      console.log err
+
+
+app.get '/rest/todos/session/:id',(req,resp)->
+  id = mongoose.Types.ObjectId(req.params.id)
+  TodoModel.where('session',id)
+    .exec (err,todos)->
+      return resp.send todos if not err
+      console.log err
 
 
 app.post '/rest/todos',(req,resp)->
   todo = new TodoModel
     title: req.body.title
     completed: req.body.completed
+    session: req.body.session
 
   todo.save (err)->
     if not err

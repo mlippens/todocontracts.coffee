@@ -1,8 +1,8 @@
 define ['contracts-js','backbone','collections/todos'], (C,Backbone,Todos)->
   class Session extends Backbone.Model
+
     defaults:
-      title: ''
-      todos: new Todos()
+      name: ''
 
     idAttribute: '_id'
 

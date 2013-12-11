@@ -6,6 +6,8 @@ define ['proxiedBackbone','contracts-js'],(Backbone,C)->
     defaults:
       title: ''
       completed: false
+
+    urlRoot: 'rest/todos/'
       
     idAttribute: "_id"
 
