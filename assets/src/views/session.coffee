@@ -18,7 +18,7 @@ define ['jquery',
       @$app = $('#todoapp')
       @$footer = $('#info')
       @$sessioninfo = @$el.find('#sessioninfo')
-      @$name = @$el.find('input #name')
+      @$name = @$el.find('#name')
       @$app.hide()
       @$footer.hide()
 
@@ -35,6 +35,7 @@ define ['jquery',
           success: ->
             console.log session.id
             that.$sessioninfo.html('')
+            that.$name.val('')
             that.$sessioninfo.html("surf to <a href=\"#/session/#{session.id}\">here</a> to open your todo list!")
         }
 

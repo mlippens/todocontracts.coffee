@@ -51,7 +51,7 @@ define ['jquery',
 
 
 
-        @$el.html(_.template(overviewTemplate,{}))
+        @$el.html(_.template(overviewTemplate,{title: @model?.get('name') || "Todos"}))
         @allCheckbox = @.$('#toggle-all')[0]
         #mimic backbone style
         @$input = @.$('#new-todo')
