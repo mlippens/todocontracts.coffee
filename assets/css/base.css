@@ -553,3 +553,7 @@ hr {
 		margin: 130px auto 40px auto;
 	}
 }
+
+.centered  {
+    margin: 0 auto;
+}

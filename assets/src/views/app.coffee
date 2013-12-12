@@ -2,15 +2,17 @@ define ['jquery',
   'underscore',
   'proxiedBackbone',
   'collections/todos',
+  'models/todo',
   'views/tododetail',
   'text!templates/stats.html',
   'text!templates/todo-overview.html',
   'common'
-  'contracts-js'],
-  ($, _,Backbone, Todos, TodoView, statsTemplate,overviewTemplate, Common, C)->
+  'contracts-js'
+  'socketio'],
+  ($, _,Backbone, Todos, TodoModel, TodoView, statsTemplate,overviewTemplate, Common, C,Socket)->
 
     #import into the contract system.
-    C.import(Backbone.View,"App View")
+    #C.import(Backbone.View,"App View")
 
     class AppView extends Backbone.View
 
@@ -25,7 +27,31 @@ define ['jquery',
         'click #toggle-all': 'toggleAllComplete'
 
       initialize: ()->
-        @$el.html(_.template(overviewTemplate,{}))
+        Todos = new Todos()
+        Todos.url = "rest/todos/session/#{@model.id}" if @model
+
+        @connection = Socket.connect "http://localhost:4711"
+
+        that = @
+        #we register all the events that require us to change our application view/state
+        @connection.on "add",(data)->
+          console.log Todos
+          todo = new TodoModel(data)
+          Todos.add todo if (not Todos.any (t)->t.get('_id') == data.id) and that.model?.id is data.session
+
+        @connection.on "update",(data)->
+          todo = Todos.filter (t)-> t.get('_id') == data._id
+          todo[0].set(data) if todo.length isnt 0
+
+        @connection.on "remove",(data)->
+          todo = Todos.filter (t)-> t.get('_id') == data._id
+          Todos.remove(todo[0]) if todo.length isnt 0
+          Todos.trigger 'reset'
+
+
+
+
+        @$el.html(_.template(overviewTemplate,{title: @model?.get('name') || "Todos"}))
         @allCheckbox = @.$('#toggle-all')[0]
         #mimic backbone style
         @$input = @.$('#new-todo')
@@ -33,6 +59,8 @@ define ['jquery',
         @$main = @.$('#main')
         #on added
         @listenTo Todos, 'add', @addOne
+        #now we use socket to add
+
         #on fetch (see stacktrace)
         @listenTo Todos, 'reset', @addAll
         #on a change of the completed field
@@ -83,6 +111,7 @@ define ['jquery',
         title: @$input.val().trim()
         order: Todos.nextOrder()
         completed: false
+        session: @model.id if @model
 
       createOnEnter: (e)->
         if !(e.which != Common.ENTER_KEY || !@$input.val().trim())

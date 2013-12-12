@@ -1,7 +1,8 @@
-define ['proxiedBackbone','models/todo','backboneLocalStorage','contracts-js'],(Backbone,TodoModel,Store,C)->
+define ['proxiedBackbone','models/todo','contracts-js'],(Backbone,TodoModel,C)->
   class Todos extends Backbone.Collection
     model: TodoModel
-    localStorage: new Store('todos-storage')
+
+    url: '/rest/todos'
 
     completed: ()->
         @filter (todo)->
@@ -19,4 +20,7 @@ define ['proxiedBackbone','models/todo','backboneLocalStorage','contracts-js'],(
     comparator: (todo)->
         todo.get 'order'
 
-  new Todos()
+    #disallow creating a new model with a duplicate title, becomes null operation if so
+    create: (todo,options)->
+      Backbone.Collection.prototype.create.call(@,todo,options) if not @.any (t)-> t.get('title') is todo.title
+

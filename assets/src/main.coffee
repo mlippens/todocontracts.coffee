@@ -7,6 +7,8 @@ require.config
     #backbone:
     #  deps: ['underscore','jquery']
     #  exports: 'Backbone'
+    'backbone-relational':
+      deps: ['backbone']
     backboneLocalstorage:
       deps: ['backbone']
       exports: 'Store'
@@ -15,8 +17,10 @@ require.config
     #'jquery': '../bower_components/jquery/jquery',
     #'underscore': '../bower_components/underscore/underscore',
     #'backbone': '../bower_components/backbone/backbone',
+    'backbone-relational': '../bower_components/backbone-relational/backbone-relational'
     'backboneLocalStorage': '../bower_components/backbone.localStorage/backbone.localStorage',
     'text': '../bower_components/requirejs-text/text'
+    'socketio': '/socket.io/socket.io'
 
 define 'jquery',[],()->
   return jQuery
@@ -27,7 +31,7 @@ define 'backbone',[],()->
 define 'contracts-js',[],()->
   return root['contracts-js']
 
-CONTRACTS_FLAG = true
+CONTRACTS_FLAG = false
 #contracts switch
 if CONTRACTS_FLAG
   define 'proxiedBackbone',[],()->
@@ -37,8 +41,7 @@ else
     return root.Backbone
 
 require ['contracts-js','jquery','proxiedBackbone','views/app','router/workspace'],(C,$,Backbone,AppView,Workspace)->
-
-  new AppView()
+  new Workspace()
   Backbone.history.start()
 
 
