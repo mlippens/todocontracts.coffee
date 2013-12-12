@@ -144,7 +144,7 @@ History_prototype = ? {
 }
 
 View_prototype = ? {
-  _configure:         (Obj)->Any
+  #_configure:         (Obj)->Any
 
   on:                 !events['on']
   off:                !events['off']
@@ -173,14 +173,20 @@ Model_prototype = ? {
   listenTo:           !events['listenTo']
   stopListening:      !events['stopListening']
 
+
   idAttribute:  Str
   changed:      Null or Arr
+  urlRoot:      Any?
+
   changedAttributes: (Any?)-> Arr
   clear:        (Silencable?) -> Any
   clone:        () -> Any
   destroy:      (Obj?) -> Any
   escape:       (Str) -> Str
+
   get:          (Str) -> Any
+  set:          (Any) -> Any #mult options?
+
   has:          (Str) -> Bool
   hasChanged:   (Str?)-> Bool
   isNew:        ()-> Bool
@@ -188,24 +194,24 @@ Model_prototype = ? {
   previous:     (Str)-> Any
   #previous: (Str)-> Bool This failed but no contract violation. Hmm?
   previousAttributes: ()-> Arr
-  set:          (Any) -> Any #mult options?
+
   save:         (Any?,Any?)->Any
   unset:        (Str,Silencable?)-> Obj
-  url:          Any
+
   parse:        (Any,Any?)->Any
   #toJSON:       (Any?)->Any fails despite being most general function contract(?)
-  sync:         (Str,Obj,Obj?)-> Any
+  #0.9 sync:         (Str,Obj,Obj?)-> Any
 
   #original
-  #sync:         (Arr)->Any
+  sync:         (Str)->Any
 
-###  #underscore mixins
+  #underscore mixins
   keys:         ()->[...Str]
   values:       ()->[...Any]
   pairs:        ()->[...Any]
   invert:       ()->Any
   pick:         ([...Str])->Any
-  omit:         ([...Str])->Any###
+  omit:         ([...Str])->Any
 }
 
 Collection_prototype = ? {
@@ -256,18 +262,18 @@ Collection_prototype = ? {
   any:        (((Model,Num)->Bool),Any?)->Bool
   collect:    (((Model,Num,Any?)->Arr),Any?)->Arr
   chain:      ()-> Any
-  #@dep compact:    ()-> [...Model]
+  #1.0 compact:    ()-> [...Model]
   contains:   (Any)->Bool
   countBy:    (Str or (Model,Num)->Any)-> Arr
   detect:     (((Any)->Bool),Any?)-> Any
-  #@dep difference: ([...Model])->[...Model]
+  difference: ([...Model])->[...Model]
   drop:       (Num?)-> Model or [...Model]
-  #out of date... each:       (Model,Num,Any?)->Any
+  each:       (Model,Num,Any?)->Any
   every:      (((Model,Num)->Bool),Any?)->Bool
   filter:     (((Model,Num)->Bool),Any?)->[...Model]
   find:       (((Model,Num)->Bool),Any?)->Model
   first:      (Num?)->Model or [...Model]
-  #@deprecated flatten:    (Bool?)-> [...Model]
+  #1.0 flatten:    (Bool?)-> [...Model]
   foldl:      (((Any,Model,Num)->Any),Any,Any?)->Any
   foldr:      (((Any,Model,Num)->Any),Any,Any?)->Any
   forEach:    (((Model,Num,Any?)->Any),Any?)->Any
@@ -278,7 +284,7 @@ Collection_prototype = ? {
   indexOf:    (Model,Bool?)->Num
   initial:    (Num?)->Model or [...Model]
   inject:     (((Any,Model,Num)->Any),Any,Any?)->Any
-  #@deprecated intersection: ([...Model])->[...Model]
+  #1.0 intersection: ([...Model])->[...Model]
   isEmpty:     (Any)->Bool
   invoke:     (Str,Arr)->Any
   last:       (Num?)->Model or [...Model]
@@ -287,14 +293,16 @@ Collection_prototype = ? {
   max:        (((Model,Num,Any?)->Any)?,Any?)->Model
   min:        (((Model,Num,Any?)->Any)?,Any?)->Model
 
-  #@deprecated object:     (Arr)->Arr
+  #1.0 object:     (Arr)->Arr
   reduce:     (((Any,Model,Num)->Any),Any,Any?)->Any
   select:     (Any,Any?)->Arr
   size:       ()->Num
   shuffle:    ()->Arr
   some:       (((Model,Num)->Any),Any?)->Bool
-  #out of date... sortBy:     ((Str or ((Model,Num)->Num)),Any?)->[...Model]
-  sortedIndex:(Model,((Model,Num)->Num)?)->Num
+  #@todo sortBy:     ((Str or ((Model,Num)->Num)),Any?)->[...Model]
+
+
+  #sortedIndex:(Model,((Model,Num)->Num)?)->Num
   #@dep range:      (Num,Num?,Num?)->Any
   #wat nu? kan alleen als laatste twee optional zijn :)
   #range(stop: number, step?: number): any;
@@ -314,10 +322,10 @@ Collection_prototype = ? {
   #take
   toArray:    ()->Arr
   #toJSON
-  #@dep union:      ([...Model])->[...Model]
-  #@dep uniq:       (Bool?,((Model,Num)->Bool)?)->[...Model]
+  #1.0 union:      ([...Model])->[...Model]
+  #1.0 uniq:       (Bool?,((Model,Num)->Bool)?)->[...Model]
   without:    ([...Model]?)->[...Model]
-  #@dep zip:        ([...Model])->[...Model]
+  #zip:        ([...Model])->[...Model]
 }
 
 copyProps = (obj,result)->
