@@ -7,6 +7,10 @@ define ['proxiedBackbone','contracts-js'],(Backbone,C)->
       title: ''
       completed: false
 
+    urlRoot: 'rest/todos/'
+      
+    idAttribute: "_id"
+
     #not useful to guard, it should be in backbone.js
     toggle: ()->
       @save completed: !@get('completed')
