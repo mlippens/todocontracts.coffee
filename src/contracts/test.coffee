@@ -1,7 +1,26 @@
 root = exports ? this
 
-backbone =  root['Backbone']
-C        =  root['contracts-js']
+###Model       = ?!(x)-> x instanceof Backbone.Model or _.isUndefined(x)
+View        = ?!(x)-> x instanceof Backbone.View or _.isUndefined(x)
+Router      = ?!(x)-> x instanceof Backbone.Router or _.isUndefined(x)
+Collection  = ?!(x)-> x instanceof Backbone.Collection or _.isUndefined(x)
+Events      = ?!(x)-> x instanceof Backbone.Events or _.isUndefined(x)
+History     = ?!(x)-> x instanceof Backbone.History or _.isUndefined(x)###
+
+
+
+Obj         = ?!(x)-> if _.isUndefined(x) or _.isObject(x)
+  true
+else
+  false
+
+Model       = ?Obj
+View        = ?Obj
+Router      = ?Obj
+Collection  = ?Obj
+Events      = ?Obj
+History     = ?Obj
+
 
 
 Silencable = ? {
@@ -26,27 +45,6 @@ Arr = ? {
 }
 
 
-Obj         = ?!(x)-> if _.isUndefined(x) or _.isObject(x)
-                        true
-                      else
-                        false
-
-Model       = ?!(x)-> x instanceof Backbone.Model or _.isUndefined(x)
-View        = ?!(x)-> x instanceof Backbone.View or _.isUndefined(x)
-Router      = ?!(x)-> x instanceof Backbone.Router or _.isUndefined(x)
-Collection  = ?!(x)-> x instanceof Backbone.Collection or _.isUndefined(x)
-Events      = ?!(x)-> x instanceof Backbone.Events or _.isUndefined(x)
-History     = ?!(x)-> x instanceof Backbone.History or _.isUndefined(x)
-
-###
-Model       = ?Obj
-View        = ?Obj
-Router      = ?Obj
-Collection  = ?Obj
-Events      = ?Obj
-History     = ?Obj
-###
-
 Constructor = ?(Any) ==> Any
 Extend      = ?(Any)-> Any
 
@@ -66,82 +64,6 @@ events['listenTo']    = ?(Obj,Str,(Any?) -> Any) -> Any
 #events['listenToOnce']= ?(Obj,Str,(Any?) -> Any)-> Any
 events['stopListening']=?(Obj?,Str?,((Any?)->Any)?)->Any
 events['once']        =?(Str,((Any?)->Any),Any?)->Any
-
-
-proxy ::
-  $:          (Any)-> Any
-  View:       !Constructor
-  Model:      !Constructor
-  Router:     !Constructor
-  Collection: !Constructor
-  Events:     Obj
-  History:    !Constructor
-  VERSION:    Str
-  bind:       !events['on']
-  emulateHTTP:Bool
-  emulateJSON:Bool
-  history:    !History
-  listenTo:   !events['listenTo']
-  localSync:  Any
-  noConflict: Any
-  off:        !events['off']
-  on:         !events['on']
-  once:       !events['once']
-  stopListening: !events['stopListening']
-  sync:       Any
-  trigger:    !events['trigger']
-  unbind:     !events['off']
-proxy =
-  $:          backbone.$
-  View:       backbone.View.bind({})
-  Model:      backbone.Model.bind({})
-  Router:     backbone.Router.bind({})
-  Collection: backbone.Collection.bind({})
-  Events:     backbone.Events
-  History:    backbone.History.bind({})
-  VERSION:    backbone.VERSION
-  bind:       backbone.bind
-  emulateHTTP: backbone.emulateHTTP
-  emulateJSON: backbone.emulateJSON
-  history:    backbone.history
-  listenTo:   backbone.listenTo
-  localSync:  backbone.localSync
-  noConflict: backbone.noConflict
-  off:        backbone.off
-  on:         backbone.on
-  once:       backbone.once
-  stopListening: backbone.stopListening
-  sync:       backbone.sync
-  trigger:    backbone.trigger
-  unbind:     backbone.unbind
-
-Router_prototype = ? {
-  route:      (Str,Str,((Any?)->Any?)?)->Any
-  navigate:   (Str,Bool or NavigateOptions)-> Router
-}
-
-History_prototype = ? {
-  _updateHash:  (Any,Str,Bool)->Any
-
-  bind:         !events['on']
-  checkUrl:     (Any?)->Any
-  getFragment:  (Str,Bool?)->Str
-  getHash:      (Any?)-> Str
-  interval:     Num
-  listenTo:     !events['listenTo']
-  loadUrl:      (Str)->Bool
-  navigate:     (Str,Any?)->Bool
-  on:           !events['on']
-  off:          !events['off']
-  once:         !events['once']
-  route:        (Str,((Any?)->Any)?)->Any
-  start:        (HistoryOptions?)-> Bool
-  stop:         ()->Any
-  stopListening:!events['stopListening']
-  trigger:      !events['trigger']
-  unbind:       !events['off']
-  #started:      Bool
-}
 
 View_prototype = ? {
   _configure:         (Obj)->Any
@@ -320,33 +242,74 @@ Collection_prototype = ? {
   #@dep zip:        ([...Model])->[...Model]
 }
 
-copyProps = (obj,result)->
-  if result is null
-    result = {}
-  for own prop of obj
-    result[prop] = obj[prop]
-  result
+Router_prototype = ? {
+  route:      (Str,Str,((Any?)->Any?)?)->Any
+  navigate:   (Str,Bool or NavigateOptions)-> Router
+}
 
-copyAndProxyPrototype = (orig,contract,constructor)->
-  result = copyProps(orig,Object.create(orig))
-  result.constructor = constructor
-  result :: contract
-  result = result
-  return result
+History_prototype = ? {
+  _updateHash:  (Any,Str,Bool)->Any
 
+  bind:         !events['on']
+  checkUrl:     (Any?)->Any
+  getFragment:  (Str,Bool?)->Str
+  getHash:      (Any?)-> Str
+  interval:     Num
+  listenTo:     !events['listenTo']
+  loadUrl:      (Str)->Bool
+  navigate:     (Str,Any?)->Bool
+  on:           !events['on']
+  off:          !events['off']
+  once:         !events['once']
+  route:        (Str,((Any?)->Any)?)->Any
+  start:        (HistoryOptions?)-> Bool
+  stop:         ()->Any
+  stopListening:!events['stopListening']
+  trigger:      !events['trigger']
+  unbind:       !events['off']
+  #started:      Bool
+}
 
-proxy.View.prototype  = copyAndProxyPrototype(backbone.View.prototype, View_prototype, backbone.View)
-proxy.Model.prototype = copyAndProxyPrototype(backbone.Model.prototype, Model_prototype, backbone.Model)
-proxy.Router.prototype= copyAndProxyPrototype(backbone.Router.prototype, Router_prototype, backbone.Router)
-#todo adapt contracts
-proxy.Collection.prototype= copyAndProxyPrototype(backbone.Collection.prototype,Collection_prototype, backbone.Collection)
-proxy.History.prototype=  copyAndProxyPrototype(backbone.History.prototype,History_prototype,backbone.History)
+proxy ::
+  $:          (Any)-> Any
+  View:       {
+    prototype: !View_prototype
+  }
+  Model:      {
+    prototype: !Model_prototype
+  }
+  Router:     {
+    prototype: !Router_prototype
+  }
+  Collection: {
+    prototype: !Collection_prototype
+  }
+  Events:     Obj
+  History:    {
+    prototype: !History_prototype
+  }
+  VERSION:    Str
+  bind:       !events['on']
+  emulateHTTP:Bool
+  emulateJSON:Bool
+  history:    Any
+  listenTo:   !events['listenTo']
+  #localSync:  (Any) -> Any
+  noConflict: Any
+  off:        !events['off']
+  on:         !events['on']
+  once:       !events['once']
+  stopListening: !events['stopListening']
+  sync:       Any
+  trigger:    !events['trigger']
+  unbind:     !events['off']
+proxy = Backbone
 
+#for some reason needed? This does affect backbone! and this is a problem...
+#we need to understand why this is needed for instanceof
+###for prop of proxy
+  if proxy[prop]['prototype']
+    proxy[prop]['prototype'] = Object.create(proxy[prop]['prototype'])###
 
-C.setExported proxy.View, "Backbone.View"
-C.setExported proxy.Model, "Backbone.Model"
-C.setExported proxy.History, "Backbone.History"
-C.setExported proxy.Router, "Backbone.Router"
-C.setExported proxy.Collection, "Backbone.Collection"
 
 root['proxiedBackbone'] = proxy
