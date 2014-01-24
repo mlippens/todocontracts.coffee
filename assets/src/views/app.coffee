@@ -12,7 +12,7 @@ define ['jquery',
   ($, _,Backbone, Todos, TodoModel, TodoView, statsTemplate,overviewTemplate, Common, C,Socket)->
 
     #import into the contract system.
-    #C.import(Backbone.View,"App View")
+    #Backbone = C.import(Backbone,"App View")
 
     class AppView extends Backbone.View
 
@@ -29,6 +29,7 @@ define ['jquery',
       initialize: ()->
         Todos = new Todos()
         Todos.url = "rest/todos/session/#{@model.id}" if @model
+        Common.todos = Todos
 
         @connection = Socket.connect "http://localhost:4711"
 

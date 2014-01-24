@@ -9,7 +9,9 @@
             "express": "latest",
             "path": "latest",
             "mongoose": "latest",
-            "socket.io": "latest"
+            "socket.io": "latest",
+            "underscore": "latest",
+            "backbone": "latest"
         },
     "author": "Michael Lippens"
 }

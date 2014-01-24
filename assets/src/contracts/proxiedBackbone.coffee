@@ -26,7 +26,7 @@ Arr = ? {
 }
 
 
-Obj         = ?!(x)-> if _.isUndefined(x) or _.isObject(x)
+Obj         = ?!(x)-> if _.isObject(x) or _.isUndefined(x)
                         true
                       else
                         false
@@ -268,7 +268,7 @@ Collection_prototype = ? {
   detect:     (((Any)->Bool),Any?)-> Any
   difference: ([...Model])->[...Model]
   drop:       (Num?)-> Model or [...Model]
-  each:       (Model,Num,Any?)->Any
+  each:       (((Model,Num,Any?)->Any),Any?)-> Any
   every:      (((Model,Num)->Bool),Any?)->Bool
   filter:     (((Model,Num)->Bool),Any?)->[...Model]
   find:       (((Model,Num)->Bool),Any?)->Model
@@ -335,20 +335,20 @@ copyProps = (obj,result)->
     result[prop] = obj[prop]
   result
 
-copyAndProxyPrototype = (orig,contract,constructor)->
-  result = copyProps(orig,Object.create(orig))
+proxyPrototype = (orig,contract,constructor)->
+  result = Object.create(orig)
   result.constructor = constructor
   result :: contract
   result = result
   return result
 
 
-proxy.View.prototype  = copyAndProxyPrototype(backbone.View.prototype, View_prototype, backbone.View)
-proxy.Model.prototype = copyAndProxyPrototype(backbone.Model.prototype, Model_prototype, backbone.Model)
-proxy.Router.prototype= copyAndProxyPrototype(backbone.Router.prototype, Router_prototype, backbone.Router)
+proxy.View.prototype  = proxyPrototype(backbone.View.prototype, View_prototype, backbone.View)
+proxy.Model.prototype = proxyPrototype(backbone.Model.prototype, Model_prototype, backbone.Model)
+proxy.Router.prototype= proxyPrototype(backbone.Router.prototype, Router_prototype, backbone.Router)
 #todo adapt contracts
-proxy.Collection.prototype= copyAndProxyPrototype(backbone.Collection.prototype,Collection_prototype, backbone.Collection)
-proxy.History.prototype=  copyAndProxyPrototype(backbone.History.prototype,History_prototype,backbone.History)
+proxy.Collection.prototype= proxyPrototype(backbone.Collection.prototype,Collection_prototype, backbone.Collection)
+proxy.History.prototype=  proxyPrototype(backbone.History.prototype,History_prototype,backbone.History)
 
 
 C.setExported proxy.View, "Backbone.View"

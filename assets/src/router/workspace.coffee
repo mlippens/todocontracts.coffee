@@ -20,7 +20,8 @@ define ['common','collections/todos','collections/sessions','views/app','proxied
 
 
     setFilter: (param)->
-        ###Common.TodoFilter = param.trim() || ''
-        Todos.trigger 'filter'###
+        Common.TodoFilter = param.trim() || ''
+        #common space to keep the todos
+        Common.todos.trigger 'filter'
 
   Workspace
