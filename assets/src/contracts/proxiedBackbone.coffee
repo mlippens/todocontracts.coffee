@@ -93,12 +93,12 @@ proxy ::
   unbind:     !events['off']
 proxy =
   $:          backbone.$
-  View:       ->
-  Model:      ->
-  Router:     ->
-  Collection: ->
+  View:       backbone.Model.bind({})
+  Model:      backbone.Model.bind({})
+  Router:     backbone.Router.bind({})
+  Collection: backbone.Collection.bind({})
   Events:     backbone.Events
-  History:    ->
+  History:    backbone.History.bind({})
   VERSION:    backbone.VERSION
   bind:       backbone.bind
   emulateHTTP: backbone.emulateHTTP
@@ -335,7 +335,7 @@ copyProps = (obj,result)->
     result[prop] = obj[prop]
   result
 
-proxyPrototype = (orig,contract)->
+proxyPrototype = (orig,contract,constructor)->
   result = Object.create(orig)
   #result.constructor = constructor
   result :: contract
@@ -343,11 +343,11 @@ proxyPrototype = (orig,contract)->
   return result
 
 
-proxy.View.prototype  = proxyPrototype(backbone.View.prototype, View_prototype)
-proxy.Model.prototype = proxyPrototype(backbone.Model.prototype, Model_prototype)
-proxy.Router.prototype= proxyPrototype(backbone.Router.prototype, Router_prototype)
-proxy.Collection.prototype= proxyPrototype(backbone.Collection.prototype,Collection_prototype)
-proxy.History.prototype=  proxyPrototype(backbone.History.prototype,History_prototype)
+proxy.View.prototype  = C.guard(View_prototype,Object.create(backbone.View.prototype))
+proxy.Model.prototype = C.guard(Model_prototype,Object.create(backbone.Model.prototype))
+proxy.Router.prototype= C.guard(Router_prototype,Object.create(backbone.Router.prototype))
+proxy.Collection.prototype= C.guard(Collection_prototype,Object.create(backbone.Collection.prototype))
+proxy.History.prototype=  C.guard(History_prototype,Object.create(backbone.History.prototype))
 
 
 C.setExported proxy.View, "Backbone.View"
