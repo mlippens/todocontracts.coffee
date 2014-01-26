@@ -11,7 +11,8 @@
             "mongoose": "latest",
             "socket.io": "latest",
             "underscore": "latest",
-            "backbone": "latest"
+            "backbone": "latest",
+            "jquery": "latest"
         },
     "author": "Michael Lippens"
 }

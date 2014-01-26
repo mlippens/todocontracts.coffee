@@ -47,5 +47,5 @@ g = new Bar()
 console.log g.bar
 
 #apparently the behaviour is the same, BUT oldskool subclassing has a different effect than using coffeescript's extend!
-#why does bind work, but -> class.apply(@,arguments) doesn't? It's supposed to do the same thing as bind does.
+#why does bind work, but -> class.apply(@,arguments) doesn't? It's supposed to do the same thing as bind does (more or less?)
 

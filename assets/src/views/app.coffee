@@ -12,7 +12,7 @@ define ['jquery',
   ($, _,Backbone, Todos, TodoModel, TodoView, statsTemplate,overviewTemplate, Common, C,Socket)->
 
     #import into the contract system.
-    Backbone = C.import(Backbone,"App View")
+    #Backbone = C.import(Backbone,"App View")
 
     class AppView extends Backbone.View
 

@@ -67,54 +67,6 @@ events['listenTo']    = ?(Obj,Str,(Any?) -> Any) -> Any
 events['stopListening']=?(Obj?,Str?,((Any?)->Any)?)->Any
 events['once']        =?(Str,((Any?)->Any),Any?)->Any
 
-
-proxy ::
-  $:          (Any)-> Any
-  View:       !Constructor
-  Model:      !Constructor
-  Router:     !Constructor
-  Collection: !Constructor
-  Events:     Obj
-  History:    !Constructor
-  VERSION:    Str
-  bind:       !events['on']
-  emulateHTTP:Bool
-  emulateJSON:Bool
-  history:    !History
-  listenTo:   !events['listenTo']
-  localSync:  Any
-  noConflict: Any
-  off:        !events['off']
-  on:         !events['on']
-  once:       !events['once']
-  stopListening: !events['stopListening']
-  sync:       Any
-  trigger:    !events['trigger']
-  unbind:     !events['off']
-proxy =
-  $:          backbone.$
-  View:       backbone.Model.bind({})
-  Model:      backbone.Model.bind({})
-  Router:     backbone.Router.bind({})
-  Collection: backbone.Collection.bind({})
-  Events:     backbone.Events
-  History:    backbone.History.bind({})
-  VERSION:    backbone.VERSION
-  bind:       backbone.bind
-  emulateHTTP: backbone.emulateHTTP
-  emulateJSON: backbone.emulateJSON
-  history:    backbone.history
-  listenTo:   backbone.listenTo
-  localSync:  backbone.localSync
-  noConflict: backbone.noConflict
-  off:        backbone.off
-  on:         backbone.on
-  once:       backbone.once
-  stopListening: backbone.stopListening
-  sync:       backbone.sync
-  trigger:    backbone.trigger
-  unbind:     backbone.unbind
-
 Router_prototype = ? {
   route:      (Str,Str,((Any?)->Any?)?)->Any
   navigate:   (Str,Bool or NavigateOptions)-> Router
@@ -343,11 +295,85 @@ proxyPrototype = (orig,contract,constructor)->
   return result
 
 
-proxy.View.prototype  = C.guard(View_prototype,Object.create(backbone.View.prototype))
+proxyView = ->
+proxyView.prototype = Object.create(backbone.View.prototype)
+
+proxyModel = ->
+proxyModel.prototype = Object.create(backbone.Model.prototype)
+
+proxyCollection = ->
+proxyCollection.prototype = Object.create(backbone.Collection.prototype)
+
+proxyHistory = ->
+proxyHistory.prototype = Object.create(backbone.History.prototype)
+
+proxyRouter = ->
+proxyRouter.prototype = Object.create(backbone.Router.prototype)
+
+proxy ::
+  $:          (Any)-> Any
+  View:       {
+    prototype: !View_prototype
+  }
+  Model:      {
+    prototype: !Model_prototype
+  }
+  Router:     {
+    prototype: !Router_prototype
+  }
+  Collection: {
+    prototype: !Collection_prototype
+  }
+  Events:     Obj
+  History:    {
+    prototype: !History_prototype
+  }
+  VERSION:    Str
+  bind:       !events['on']
+  emulateHTTP: Bool
+  emulateJSON: Bool
+  history:    !History
+  listenTo:   !events['listenTo']
+  localSync:  Any
+  noConflict: Any
+  off:        !events['off']
+  on:         !events['on']
+  once:       !events['once']
+  stopListening: !events['stopListening']
+  sync:       Any
+  trigger:    !events['trigger']
+  unbind:     !events['off']
+proxy =
+  $:          backbone.$
+  View:       proxyView
+  Model:      proxyModel
+  Router:     proxyRouter
+  Collection: proxyCollection
+  Events:     backbone.Events
+  History:    proxyHistory
+  VERSION:    backbone.VERSION
+  bind:       backbone.bind
+  emulateHTTP: backbone.emulateHTTP
+  emulateJSON: backbone.emulateJSON
+  history:    backbone.history
+  listenTo:   backbone.listenTo
+  localSync:  backbone.localSync
+  noConflict: backbone.noConflict
+  off:        backbone.off
+  on:         backbone.on
+  once:       backbone.once
+  stopListening: backbone.stopListening
+  sync:       backbone.sync
+  trigger:    backbone.trigger
+  unbind:     backbone.unbind
+
+
+###
 proxy.Model.prototype = C.guard(Model_prototype,Object.create(backbone.Model.prototype))
 proxy.Router.prototype= C.guard(Router_prototype,Object.create(backbone.Router.prototype))
 proxy.Collection.prototype= C.guard(Collection_prototype,Object.create(backbone.Collection.prototype))
 proxy.History.prototype=  C.guard(History_prototype,Object.create(backbone.History.prototype))
+###
 
 
 C.setExported proxy.View, "Backbone.View"
