@@ -25,18 +25,17 @@ Arr = ? {
   length: !(x)-> typeof x is "number"
 }
 
+Arr_like = ?!(x)->
+  typeof x.length isnt 'undefined'
 
-Obj         = ?!(x)-> if _.isObject(x) or _.isUndefined(x)
-                        true
-                      else
-                        false
+Obj         = ?!(x)-> _.isObject x
 
-Model       = ?!(x)-> x instanceof Backbone.Model or _.isUndefined(x)
-View        = ?!(x)-> x instanceof Backbone.View or _.isUndefined(x)
-Router      = ?!(x)-> x instanceof Backbone.Router or _.isUndefined(x)
-Collection  = ?!(x)-> x instanceof Backbone.Collection or _.isUndefined(x)
-Events      = ?!(x)-> x instanceof Backbone.Events or _.isUndefined(x)
-History     = ?!(x)-> x instanceof Backbone.History or _.isUndefined(x)
+Model       = ?!(x)-> x instanceof Backbone.Model
+View        = ?!(x)-> x instanceof Backbone.View
+Router      = ?!(x)-> x instanceof Backbone.Router
+Collection  = ?!(x)-> x instanceof Backbone.Collection
+Events      = ?!(x)-> x instanceof Backbone.Events
+History     = ?!(x)-> x instanceof Backbone.History
 
 ###
 Model       = ?Obj
@@ -182,7 +181,7 @@ Collection_prototype = ? {
   bind: !events['on']
   create: (Any, Any)-> Model
   #clone
-  get: (Any)-> Model
+  get: (Any)-> Model?
   #fetch
   on:   !events['on']
   off:  !events['off']
