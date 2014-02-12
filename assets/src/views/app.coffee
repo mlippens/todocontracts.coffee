@@ -12,7 +12,7 @@ define ['jquery',
   ($, _,Backbone, Todos, TodoModel, TodoView, statsTemplate,overviewTemplate, Common, C,Socket)->
 
     #import into the contract system.
-    #Backbone = C.import(Backbone,"App View")
+    Backbone = C.use(Backbone,"App View")
 
     class AppView extends Backbone.View
 
@@ -71,7 +71,7 @@ define ['jquery',
         #render is triggered on all events
         @listenTo Todos, 'all', @render
 
-        #@listenTo false
+        @listenTo false
         #triggers reset
         Todos.fetch()
 

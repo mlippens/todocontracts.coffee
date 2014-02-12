@@ -307,7 +307,7 @@ proxyCollection.prototype = Object.create(backbone.Collection.prototype)
 proxyHistory = ->
 proxyHistory.prototype = Object.create(backbone.History.prototype)
 
-proxyRouter = ->
+proxyRouter = -> Router.apply(@,arguments)
 proxyRouter.prototype = Object.create(backbone.Router.prototype)
 
 proxy ::
@@ -376,10 +376,12 @@ proxy.History.prototype=  C.guard(History_prototype,Object.create(backbone.Histo
 ###
 
 
-C.setExported proxy.View, "Backbone.View"
+###C.setExported proxy.View, "Backbone.View"
 C.setExported proxy.Model, "Backbone.Model"
 C.setExported proxy.History, "Backbone.History"
 C.setExported proxy.Router, "Backbone.Router"
-C.setExported proxy.Collection, "Backbone.Collection"
+C.setExported proxy.Collection, "Backbone.Collection"###
+
+exports = {}
 
 root['proxiedBackbone'] = proxy
