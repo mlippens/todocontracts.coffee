@@ -3,13 +3,62 @@ root = exports ? this
 backbone =  root['Backbone']
 C        =  root['contracts-js']
 
+makeArrContract = (type)->
+  (a)-> a.length isnt 'undefined' and typeof a.length is 'number' and (allInstanceOf(a,type) or a.length is 0)
+
+makeArrTypeContract = (t)->
+  (a)-> a.length isnt 'undefined' and typeof a.length is 'number' and (allTypeOf(a,t) or a.length is 0)
+
+
+allTypeOf = (a,type)->
+  for i in [0..a.length-1]
+    if not (typeof a[i] is type)
+      return false
+  return true
+
+allInstanceOf = (a,type)->
+  for i in [0..a.length-1]
+    if not (a[i] instanceof type)
+      return false
+  return true
+
+Arr = ? {
+length: !(x)-> typeof x is "number"
+}
+
+Arr_like = ?!(x)->
+  typeof x.length isnt 'undefined'
+
+Obj         = ?!(x)-> _.isObject x
+
+Model       = ?!(x)-> x instanceof backbone.Model
+ModelArr    = ?!makeArrContract(backbone.Model)
+
+View        = ?!(x)-> x instanceof backbone.View
+ViewArr     = ?!makeArrContract(backbone.View)
+
+Router      = ?!(x)-> x instanceof backbone.Router
+RouterArr   = ?!makeArrContract(backbone.Router)
+
+Collection  = ?!(x)-> x instanceof backbone.Collection
+CollectionArr = ?!makeArrContract(backbone.Collection)
+
+Events      = ?!(x)-> x instanceof backbone.Events
+EventsArr   = ?!makeArrContract(backbone.Events)
+
+History     = ?!(x)-> x instanceof backbone.History
+HistoryArr  = ?!makeArrContract(backbone.History)
+
+StrArr      = ?!makeArrTypeContract("string")
+
 
 Silencable = ? {
   silent: Bool?
 }
+
 AddOptions = ? {
   parse:  Bool?
-  previousModels: [...Model]?
+  previousModels: ModelArr?
   success: (Any?)->Any
 }
 
@@ -20,35 +69,71 @@ HistoryOptions = ? {
   pushState: Bool?
   root:      Str?
 }
-
-Arr = ? {
-  length: !(x)-> typeof x is "number"
+Validable = ? {
+  validate: Bool?
+}
+Waitable = ? {
+  wait: Bool?
+}
+Parseable = ? {
+  parse: Any?
+}
+PersistenceOptions = ? {
+  url: Str?
+  beforeSend: ((Any)->Any)?
+  success: ((Any?,Any?,Any?)-> Any)?
+  error: ((Any?,Any?,Any?)-> Any)?
 }
 
-Arr_like = ?!(x)->
-  typeof x.length isnt 'undefined'
+ModelSetOptions = ? {
+  silent: Bool?
+  validate: Bool?
+}
+ModelFetchOptions = ? {
+  silent: Bool?
+  parse: Bool?
+  url: Str?
+  beforeSend: ((Any)->Any)?
+  success: ((Any?,Any?,Any?)-> Any)?
+  error: ((Any?,Any?,Any?)-> Any)?
+}
+ModelSaveOptions = ? {
+  silent: Bool?
+  wait: Bool?
+  validate: Bool?
+  parse: Any?
 
-Obj         = ?!(x)-> _.isObject x
+  url: Str?
+  beforeSend: ((Any)->Any)?
+  success: ((Any?,Any?,Any?)-> Any)?
+  error: ((Any?,Any?,Any?)-> Any)?
+}
 
-Model       = ?!(x)-> x instanceof Backbone.Model
-View        = ?!(x)-> x instanceof Backbone.View
-Router      = ?!(x)-> x instanceof Backbone.Router
-Collection  = ?!(x)-> x instanceof Backbone.Collection
-Events      = ?!(x)-> x instanceof Backbone.Events
-History     = ?!(x)-> x instanceof Backbone.History
+ModelDestroyOptions = ? {
+  wait: Bool?
 
-###
-Model       = ?Obj
-View        = ?Obj
-Router      = ?Obj
-Collection  = ?Obj
-Events      = ?Obj
-History     = ?Obj
-###
+  url: Str?
+  beforeSend: ((Any)->Any)?
+  success: ((Any?,Any?,Any?)-> Any)?
+  error: ((Any?,Any?,Any?)-> Any)?
+}
+
+CollectionFetchOptions = ? {
+  parse: Bool?
+
+  url: Str?
+  beforeSend: ((Any)->Any)?
+  success: ((Any?,Any?,Any?)-> Any)?
+  error: ((Any?,Any?,Any?)-> Any)?
+}
+
+OptionalDefaults = ? {
+  defaults: (()->Any)?
+}
+
 
 Constructor = ?(Any) ==> Any
 Extend      = ?(Any)-> Any
-
 
 events = {}
 events['on']          = ?(Str, ((Any?) -> Any?)?,Any?) -> Any
@@ -157,12 +242,12 @@ Model_prototype = ? {
   sync:         (Str)->Any
 
   #underscore mixins
-  keys:         ()->[...Str]
-  values:       ()->[...Any]
-  pairs:        ()->[...Any]
+  keys:         ()->StrArr
+  values:       ()->Arr
+  pairs:        ()->Arr
   invert:       ()->Any
-  pick:         ([...Str])->Any
-  omit:         ([...Str])->Any
+  pick:         (StrArr)->Any
+  omit:         (StrArr)->Any
 }
 
 Collection_prototype = ? {
@@ -190,10 +275,9 @@ Collection_prototype = ? {
   pluck: (Str)-> Any
   push: (Model,AddOptions?)->Model
   pop: (Silencable?)-> Model
-  remove: (Model or [...Model], Silencable?)-> Model or [...Model]
+  remove: (Model or ModelArr, Silencable?)-> Model or ModelArr
 
-  #CAUSES ERROR: when an Array is passed to reset is suddenly is an object and not an array anymore?! wtf
-  #reset:  ([...Model]?,Silencable?)->[...Model]
+  reset:  (ModelArr?,Silencable?)->ModelArr
   shift:  (Silencable?)-> Model
   #slice
   sort:   (Silencable?)-> Collection
@@ -217,14 +301,14 @@ Collection_prototype = ? {
   contains:   (Any)->Bool
   countBy:    (Str or (Model,Num)->Any)-> Arr
   detect:     (((Any)->Bool),Any?)-> Any
-  difference: ([...Model])->[...Model]
-  drop:       (Num?)-> Model or [...Model]
+  difference: (ModelArr)->ModelArr
+  drop:       (Num?)-> Model or ModelArr
   each:       (((Model,Num,Any?)->Any),Any?)-> Any
   every:      (((Model,Num)->Bool),Any?)->Bool
-  filter:     (((Model,Num)->Bool),Any?)->[...Model]
+  filter:     (((Model,Num)->Bool),Any?)->ModelArr
   find:       (((Model,Num)->Bool),Any?)->Model
-  first:      (Num?)->Model or [...Model]
-  #1.0 flatten:    (Bool?)-> [...Model]
+  first:      (Num?)->Model or ModelArr
+  #1.0 flatten:    (Bool?)-> ModelArr
   foldl:      (((Any,Model,Num)->Any),Any,Any?)->Any
   foldr:      (((Any,Model,Num)->Any),Any,Any?)->Any
   forEach:    (((Model,Num,Any?)->Any),Any?)->Any
@@ -233,12 +317,12 @@ Collection_prototype = ? {
   #head
   include:    (Any)->Bool
   indexOf:    (Model,Bool?)->Num
-  initial:    (Num?)->Model or [...Model]
+  initial:    (Num?)->Model or ModelArr
   inject:     (((Any,Model,Num)->Any),Any,Any?)->Any
-  #1.0 intersection: ([...Model])->[...Model]
+  #1.0 intersection: (ModelArr)->ModelArr
   isEmpty:     (Any)->Bool
   invoke:     (Str,Arr)->Any
-  last:       (Num?)->Model or [...Model]
+  last:       (Num?)->Model or ModelArr
   lastIndexOf:(Model,Num?)->Num
   map:        (((Model,Num,Any?)->Arr),Any?)->Arr
   max:        (((Model,Num,Any?)->Any)?,Any?)->Model
@@ -250,7 +334,7 @@ Collection_prototype = ? {
   size:       ()->Num
   shuffle:    ()->Arr
   some:       (((Model,Num)->Any),Any?)->Bool
-  #@todo sortBy:     ((Str or ((Model,Num)->Num)),Any?)->[...Model]
+  #@todo sortBy:     ((Str or ((Model,Num)->Num)),Any?)->ModelArr
 
 
   #sortedIndex:(Model,((Model,Num)->Num)?)->Num
@@ -260,26 +344,26 @@ Collection_prototype = ? {
   #range(start: number, stop: number, step?: number): any;
 
   reduceRight:(((Any,Model,Num)->Any),Any,Any?)->Arr
-  reject:     (((Model,Num)->Bool),Any?)->[...Model]
+  reject:     (((Model,Num)->Bool),Any?)->ModelArr
   #deze gaan wel werken maar ze zijn te "weak"
   #we maken de één optioneel en de andere dan met or
-  rest:       (Num?)->Model or [...Model]
+  rest:       (Num?)->Model or ModelArr
   #select
   #shuffle
   #size
   #some
   #sortBy
-  tail:       (Num?)->Model or [...Model]
+  tail:       (Num?)->Model or ModelArr
   #take
   toArray:    ()->Arr
   #toJSON
-  #1.0 union:      ([...Model])->[...Model]
-  #1.0 uniq:       (Bool?,((Model,Num)->Bool)?)->[...Model]
-  without:    ([...Model]?)->[...Model]
-  #zip:        ([...Model])->[...Model]
+  #1.0 union:      (ModelArr)->ModelArr
+  #1.0 uniq:       (Bool?,((Model,Num)->Bool)?)->ModelArr
+  without: (ModelArr?completed)->ModelArr
+  #zip:        (ModelArr)->ModelArr
 }
 
-copyProps = (obj,result)->
+###copyProps = (obj,result)->
   if result is null
     result = {}
   for own prop of obj
@@ -291,8 +375,7 @@ proxyPrototype = (orig,contract,constructor)->
   #result.constructor = constructor
   result :: contract
   result = result
-  return result
-
+  return result###
 
 proxyView = ->
 proxyView.prototype = Object.create(backbone.View.prototype)

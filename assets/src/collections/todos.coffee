@@ -9,7 +9,7 @@ define ['proxiedBackbone','models/todo','contracts-js'],(Backbone,TodoModel,C)->
           todo.get 'completed'
 
     remaining: ()->
-        @without.apply(@,@completed())
+        @without(@completed())
 
     nextOrder: ()->
         if !@length
