@@ -235,7 +235,7 @@ Model_prototype = ? {
   unset:        (Str,Silencable?)-> Obj
 
   parse:        (Any,Any?)->Any
-  #toJSON:       (Any?)->Any fails despite being most general function contract(?)
+  toJSON:       (Any?)->Any #fails despite being most general function contract(?)
   #0.9 sync:         (Str,Obj,Obj?)-> Any
 
   #original
@@ -337,7 +337,7 @@ Collection_prototype = ? {
   #@todo sortBy:     ((Str or ((Model,Num)->Num)),Any?)->ModelArr
 
 
-  #sortedIndex:(Model,((Model,Num)->Num)?)->Num
+  #@dep sortedIndex:(Model,((Model,Num)->Num)?)->Num
   #@dep range:      (Num,Num?,Num?)->Any
   #wat nu? kan alleen als laatste twee optional zijn :)
   #range(stop: number, step?: number): any;
@@ -359,7 +359,7 @@ Collection_prototype = ? {
   #toJSON
   #1.0 union:      (ModelArr)->ModelArr
   #1.0 uniq:       (Bool?,((Model,Num)->Bool)?)->ModelArr
-  without: (ModelArr?completed)->ModelArr
+  without: (ModelArr?)->ModelArr
   #zip:        (ModelArr)->ModelArr
 }
 
@@ -449,21 +449,7 @@ proxy =
   trigger:    backbone.trigger
   unbind:     backbone.unbind
 
-
-###
-proxy.Model.prototype = C.guard(Model_prototype,Object.create(backbone.Model.prototype))
-proxy.Router.prototype= C.guard(Router_prototype,Object.create(backbone.Router.prototype))
-proxy.Collection.prototype= C.guard(Collection_prototype,Object.create(backbone.Collection.prototype))
-proxy.History.prototype=  C.guard(History_prototype,Object.create(backbone.History.prototype))
-###
-
-
-###C.setExported proxy.View, "Backbone.View"
-C.setExported proxy.Model, "Backbone.Model"
-C.setExported proxy.History, "Backbone.History"
-C.setExported proxy.Router, "Backbone.Router"
-C.setExported proxy.Collection, "Backbone.Collection"###
-
 exports = {}
-
+exports.proxy = proxy
+C.setExported exports, "Backbone"
 root['proxiedBackbone'] = proxy
