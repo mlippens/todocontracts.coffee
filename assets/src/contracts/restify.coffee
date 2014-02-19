@@ -1,6 +1,6 @@
 root = exports ? this
 
-backbone = require('restify')
+restify = require('restify')
 C        = require('contracts-js')
 _        = require('underscore')
 
@@ -152,7 +152,7 @@ ThrottleOptions = ? {
   overrides: Obj?
 }
 
-restify = ? {
+restifyContract = ? {
   createServer:       (ServerOptions?)->Server
   createJsonClient:   (ClientOptions?)->Client
   createStringClient: (ClientOptions?)->Client
@@ -191,4 +191,11 @@ restify = ? {
   fullResponse:           ()->RequestHandler
   defaultResponseHeaders: Any
 }
+
+proxy :: restifyContract
+proxy = restify
+
+exports.restify = proxy
+
+
 

@@ -31,7 +31,7 @@ define 'backbone',[],()->
 define 'contracts-js',[],()->
   return root['contracts-js']
 
-CONTRACTS_FLAG = true
+CONTRACTS_FLAG = false
 #contracts switch
 if CONTRACTS_FLAG
   define 'proxiedBackbone',[],()->
