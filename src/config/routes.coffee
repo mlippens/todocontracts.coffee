@@ -1,8 +1,7 @@
+module.exports = (app,io)->
+  sessions  = require('../controllers/sessions')
+  todos     = require('../controllers/todos')(io)
 
-sessions  = require('../controllers/sessions')
-todos     = require('../controllers/todos')
-
-module.exports = (app)->
   app.get     '/rest',(req,resp)->resp.send "rest service running!"
 
   app.get     '/rest/sessions',sessions.all

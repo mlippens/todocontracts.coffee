@@ -30,12 +30,12 @@ fs.readdirSync(models_path).forEach (f)->
   if(~f.indexOf('.js'))
     require(models_path + '/' + f)
 
-
-require('./src/config/routes')(app)
-
 port = 4711
 io = io.listen(app.listen(port,()->
   console.log "Express server listening on port #{port} in #{app.settings.env} mode. Static dir = #{path.join(__dirname,'/assets')}"))
+
+require('./src/config/routes')(app,io)
+
 
 
 
