@@ -5,35 +5,23 @@ mongoose  = require('mongoose')
 fs        = require('fs')
 io        = require('socket.io')
 
-
-
-app = express()
-
-app.use(express.static(path.join(__dirname,'/assets')))
-#parses request body and populates request.body
-app.use express.bodyParser()
-#checks request.body for HTTP method overrides
-app.use express.methodOverride()
-#perform route lookup based on url and HTTP method
-app.use app.router
-#Where to serve static content
-###app.use(express.static(path.join(__dirname,'/assets')))###
-#Show all errors in development
-app.use express.errorHandler(dumpExceptions: true, showStack: true)
-
-app.configure = ()->
-
-mongoose.connect 'mongodb://localhost/todo_db'
+port = 4711
 
 models_path = app_root + '/src/models'
 fs.readdirSync(models_path).forEach (f)->
   if(~f.indexOf('.js'))
     require(models_path + '/' + f)
 
-port = 4711
-io = io.listen(app.listen(port,()->
-  console.log "Express server listening on port #{port} in #{app.settings.env} mode. Static dir = #{path.join(__dirname,'/assets')}"))
+app = express()
+app.use(express.static(path.join(__dirname,'/assets')))
+#parses request body and populates request.body
+app.use express.bodyParser()
+#Show all errors in development
+app.use express.errorHandler(dumpExceptions: true, showStack: true)
+app.configure = ->
+io = io.listen(app.listen(port,->console.log "Listening on port #{port}"))
 
+mongoose.connect 'mongodb://localhost/todo_db'
 require('./src/config/routes')(app,io)
 
 
