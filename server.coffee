@@ -2,9 +2,9 @@ app_root  = __dirname
 express   = require('express')
 path      = require('path')
 mongoose  = require('mongoose')
+fs        = require('fs')
+io        = require('socket.io')
 
-sessions  = require('./src/controllers/sessions')
-todos     = require('./src/controllers/todos')
 
 
 app = express()
@@ -23,17 +23,21 @@ app.use express.errorHandler(dumpExceptions: true, showStack: true)
 
 app.configure = ()->
 
+mongoose.connect 'mongodb://localhost/todo_db'
 
+models_path = app_root + '/src/models'
+fs.readdirSync(models_path).forEach (f)->
+  if(~f.indexOf('.js'))
+    require(models_path + '/' + f)
+
+
+require('./src/config/routes')(app)
 
 port = 4711
 io = io.listen(app.listen(port,()->
   console.log "Express server listening on port #{port} in #{app.settings.env} mode. Static dir = #{path.join(__dirname,'/assets')}"))
 
 
-mongoose.connect 'mongodb://localhost/todo_db'
-
-require('./src/db/schema')
-require('./routes')(app,sessions,todos)
 
 
 

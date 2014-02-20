@@ -1,7 +1,6 @@
 mongoose = require('mongoose')
 
-Schema    = mongoose.Schema
-ObjectId  = Schema.ObjectId
+ObjectId  = mongoose.Schema.ObjectId
 
 Todo = new mongoose.Schema
   title: String
