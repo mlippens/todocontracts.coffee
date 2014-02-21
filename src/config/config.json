@@ -1,0 +1,5 @@
+{
+    "port": 4711,
+    "host": "localhost",
+    "db": "todo_db"
+}

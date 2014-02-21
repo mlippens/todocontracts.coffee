@@ -4,8 +4,7 @@ path      = require('path')
 mongoose  = require('mongoose')
 fs        = require('fs')
 io        = require('socket.io')
-
-port = 4711
+config    = require('./src/config/config')
 
 models_path = app_root + '/src/models'
 fs.readdirSync(models_path).forEach (f)->
@@ -19,9 +18,9 @@ app.use express.bodyParser()
 #Show all errors in development
 app.use express.errorHandler(dumpExceptions: true, showStack: true)
 app.configure = ->
-io = io.listen(app.listen(port,->console.log "Listening on port #{port}"))
+io = io.listen(app.listen(config.port,->console.log "Listening on port #{config.port}"))
 
-mongoose.connect 'mongodb://localhost/todo_db'
+mongoose.connect 'mongodb://'+config.host+'/'+config.db
 require('./src/config/routes')(app,io)
 
 
