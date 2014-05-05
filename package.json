@@ -6,13 +6,10 @@
         {
             "contracts-js": "git://github.com/froginvasion/contracts.js#module-support",
             "contracts.coffee": "latest",
-            "express": "latest",
+            "express": "3.4.2",
             "path": "latest",
-            "mongoose": "latest",
-            "socket.io": "latest",
-            "underscore": "latest",
-            "backbone": "latest",
-            "jquery": "latest"
+            "mongoose": "3.6.13",
+            "socket.io": "latest"
         },
     "author": "Michael Lippens"
 }
