@@ -21,6 +21,7 @@ require.config
     'backboneLocalStorage': '../bower_components/backbone.localStorage/backbone.localStorage',
     'text': '../bower_components/requirejs-text/text'
     'socketio': '/socket.io/socket.io'
+    'proxiedBackbone': 'contracts/bb'
 
 define 'jquery',[],()->
   return jQuery
@@ -31,11 +32,11 @@ define 'backbone',[],()->
 define 'contracts-js',[],()->
   return root['contracts-js']
 
-CONTRACTS_FLAG = false
+CONTRACTS_FLAG = true
 #contracts switch
 if CONTRACTS_FLAG
-  define 'proxiedBackbone',[],()->
-    return root['proxiedBackbone']
+  define 'proxiedBackbone',["./contracts/bb"],(bb)->
+    bb
 else
   define 'proxiedBackbone',[],()->
     return root.Backbone

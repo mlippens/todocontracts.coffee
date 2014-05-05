@@ -22,7 +22,7 @@ define ['jquery',
 
     initialize: ()->
       @listenTo @model, 'change', @render
-      @listenTo @model, 'destroy', @remove
+      @listenTo @model, 'destroy', @removeView
       @listenTo @model, 'visible', @toggleVisible
 
 
@@ -32,6 +32,9 @@ define ['jquery',
       @toggleVisible()
       @$input = @.$('.edit')
       @
+
+    removeView: ->
+      @remove
 
     toggleVisible: ()->
       @$el.toggleClass('hidden', @isHidden());

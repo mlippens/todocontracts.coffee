@@ -4,7 +4,7 @@
     "description": "some contracted js app",
     "dependencies":
         {
-            "contracts-js": "git://github.com/froginvasion/contracts.js",
+            "contracts-js": "git://github.com/froginvasion/contracts.js#module-support",
             "contracts.coffee": "latest",
             "express": "latest",
             "path": "latest",

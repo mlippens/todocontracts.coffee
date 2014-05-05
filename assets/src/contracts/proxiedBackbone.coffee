@@ -4,10 +4,10 @@ backbone =  root['Backbone']
 C        =  root['contracts-js']
 
 makeArrContract = (type)->
-  (a)-> a.length isnt 'undefined' and typeof a.length is 'number' and (allInstanceOf(a,type) or a.length is 0)
+  (a)-> typeof a.length isnt 'undefined' and typeof a.length is 'number' and (allInstanceOf(a,type) or a.length is 0)
 
 makeArrTypeContract = (t)->
-  (a)-> a.length isnt 'undefined' and typeof a.length is 'number' and (allTypeOf(a,t) or a.length is 0)
+  (a)-> typeof a.length isnt 'undefined' and typeof a.length is 'number' and (allTypeOf(a,t) or a.length is 0)
 
 
 allTypeOf = (a,type)->
@@ -89,6 +89,8 @@ ModelSetOptions = ? {
   silent: Bool?
   validate: Bool?
 }
+
+
 ModelFetchOptions = ? {
   silent: Bool?
   parse: Bool?
@@ -389,7 +391,7 @@ proxyCollection.prototype = Object.create(backbone.Collection.prototype)
 proxyHistory = ->
 proxyHistory.prototype = Object.create(backbone.History.prototype)
 
-proxyRouter = -> Router.apply(@,arguments)
+proxyRouter = -> Router.apply(@, arguments)
 proxyRouter.prototype = Object.create(backbone.Router.prototype)
 
 proxy ::

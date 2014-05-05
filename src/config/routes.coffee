@@ -4,6 +4,8 @@ module.exports = (app,io)->
 
   app.get     '/rest',(req,resp)->resp.send "rest service running!"
 
+#app.get '/rest',function(req,resp){ resp.send "foo"};
+
   app.get     '/rest/sessions',sessions.all
   app.get     '/rest/sessions/:id',sessions.get
   app.post    '/rest/sessions',sessions.new

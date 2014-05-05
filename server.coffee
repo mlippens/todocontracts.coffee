@@ -13,10 +13,6 @@ fs.readdirSync(models_path).forEach (f)->
 
 app = express()
 app.use(express.static(path.join(__dirname,'/assets')))
-#parses request body and populates request.body
-app.use express.bodyParser()
-#Show all errors in development
-app.use express.errorHandler(dumpExceptions: true, showStack: true)
 app.configure = ->
 io = io.listen(app.listen(config.port,->console.log "Listening on port #{config.port}"))
 
